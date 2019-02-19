@@ -8,9 +8,9 @@ Rproject only to perform the mackerel stock evaluation  (2019).
 
 Based on the CCAM package, which requires installation of Rtools and TMB. 
 
-Rtools: https://cran.r-project.org/bin/windows/Rtools/
-TMB: install.packages('TMB')
-CCAM: devtools::install_github("elisvb/CCAM")
+* Rtools	https://cran.r-project.org/bin/windows/Rtools/
+* TMB		install.packages('TMB')
+* CCAM		devtools::install_github("elisvb/CCAM")
 
 The package requires installation of Rtools and TMB.
 
