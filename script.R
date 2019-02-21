@@ -33,7 +33,7 @@ ctwusa[,2] <- ct[,2] + ctUSA[-c(1:8),1]*0.50
 
 dat <- setup.ccam.data(surveys=surveys,
                       residual.fleet=cn,
-                      total.catch=ct,
+                      total.catch=ctwusa,
                       prop.mature=mo,
                       stock.mean.weight=sw,
                       stock.start.weight=sw0,
@@ -79,7 +79,8 @@ save(fit, file='Rdata/fit/fit.Rdata')
 
 
 # Jitter analyses: results sensitive to initial values?
-myjit <- jit(dat,conf,par,nojit=100,parallell = FALSE)  
-write.table(myjit,"Rdata/fit/fit_jitter.txt")
+myjit <- jit(dat,conf,par,nojit=10,parallell = FALSE)  
+jittab <- jittable(myjit)
+write.table(jittab,"Rdata/fit/fit_jitter.txt")
 
 

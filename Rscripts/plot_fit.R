@@ -25,9 +25,9 @@ saveplot(recplot(x),name='rec',dim=c(17,10),wd=.wd,type=type)
 saveplot(recplot(x,years=yr[1]:yr[2]),name='rec_1969',dim=c(17,10),wd=.wd,type=type) 
 saveplot(recplot(x,trans=function(x)x),name='rec_log',dim=c(17,10),wd=.wd,type=type) 
 saveplot(catchplot(x,fleet = 1,ci=FALSE)+scale_y_continuous(limits=c(0,100000),expand = c(0,0)),name='catch',dim=c(17,10),wd=.wd,type=type)
-saveplot(ssbplot(x)+scale_y_continuous(limits=c(0,9e5),expand = c(0,0)),name='ssb',dim=c(17,10),wd=.wd,type=type)
+saveplot(ssbplot(x)+scale_y_continuous(limits=c(0,10e5),expand = c(0,0)),name='ssb',dim=c(17,10),wd=.wd,type=type)
 saveplot(fbarplot(x)+scale_y_continuous(limits=c(0,4),expand = c(0,0)),name='F',dim=c(17,10),wd=.wd,type=type)
-saveplot(plot(refBase),name='RP',dim=c(14,14),wd=.wd,type=type)
+saveplot(plot(refBase),name='rp',dim=c(14,14),wd=.wd,type=type)
 saveplot(selplot(x),name='sel',dim=c(14,14),wd=.wd,type=type)
 saveplot(expplot(x),name='exp',dim=c(17,10),wd=.wd,type=type)
 saveplot(parplot(x),name='par',dim=c(17,17),wd=.wd,type=type)
@@ -36,14 +36,19 @@ saveplot(scplot(x),name='ssb_rel',dim=c(20,12),wd=.wd,type=type)
 saveplot(prodplot(x),name='prod',dim=c(20,12),wd=.wd,type=type)
 saveplot(kobeplot(x),name='kobe',dim=c(14,12),wd=.wd,type=type)
 
+p <- ssbplot(x)+scale_y_continuous(limits=c(0,10e5),expand = c(0,0))+geom_hline(yintercept = refBase$f40ssb)+
+    geom_hline(yintercept = refBase$f40ssb*0.8,col='darkgreen')+
+    geom_hline(yintercept = refBase$f40ssb*0.4,col='darkred')
+    
+saveplot(p,name='ssb_rp',dim=c(17,10),wd=.wd,type=type)
 update_geom_defaults("line", list(size = 1))
 saveplot(scplot(x),name='ssb_rel',dim=c(20,12),wd=.wd,type=type)
 
 if(retro){
     r <- retro(x,year=7,parallell=FALSE,silent=TRUE)  #maybe make plot with relative change
     save(r, file=paste0('Rdata/retro/',name,'_retro.Rdata'))
-    saveplot(plot(r,ci=FALSE),name="retro",dim=c(25,20),wd=.wd,type=type)
-    saveplot(plot(r,ci=TRUE),name="retro_CI",dim=c(25,20),wd=.wd,type=type)
+    saveplot(plot(r,ci=FALSE),name="retro",dim=c(16,16),wd=.wd,type=type)
+    saveplot(plot(r,ci=TRUE),name="retro_ci",dim=c(16,16),wd=.wd,type=type)
     m <- round(mohn(r),2)
     write.table(m,paste0(.wd,"/mohn.txt"))
     #plot(unlist(lapply(lapply(r,ypr),'[','f40ssb')),type='l',ylab='SSBF40%',xlab='peel')
@@ -53,7 +58,7 @@ if(retro){
 
 if(res){
     myres <- residuals(x)
-    saveplot(plot(myres,fleet=c(2,3),qq=FALSE),name="res",dim=c(30,10),wd=.wd,type=type)
+    saveplot(plot(myres,fleet=c(2,3),qq=FALSE),name="res",dim=c(20,10),wd=.wd,type=type)
 }
 
 if(procres){

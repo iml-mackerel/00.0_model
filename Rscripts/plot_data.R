@@ -11,10 +11,10 @@ p1 <- bubble(cn,col='darkblue',scale = 10)+ggtitle('Raw')
 saveplot(p1,name='cn_raw',dim=c(15,8),wd=wd,type=type)  # raw data
 
 p2 <- bubble(t(spay(t(cn))),scale = 8)+ggtitle('Standardised by year')
-saveplot(p2,name='cn_spay_compCohorts',dim=c(15,8),wd=wd,type=type)  # to check cohorts
+saveplot(p2,name='cn_spay',dim=c(15,8),wd=wd,type=type)  # to check cohorts
 
 p3 <- bubble(t(spya(t(cn))),scale = 8)+ggtitle('Standardised by age')
-saveplot(p3,name='cn_spya_compYears',dim=c(15,8),wd=wd,type=type)  # to compare between years
+saveplot(p3,name='cn_spya',dim=c(15,8),wd=wd,type=type)  # to compare between years
 
 p4 <- plotobs(dat,fleets=2,type='bar')+scale_x_continuous(expand=c(0,0))+scale_y_continuous(expand=c(0,0))+ylab('Proportion')
 saveplot(p4,name='cn_prop',dim=c(15,8),wd=wd,type=type)  # proportion in population
