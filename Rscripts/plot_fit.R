@@ -44,6 +44,14 @@ saveplot(p,name='ssb_rp',dim=c(17,10),wd=.wd,type=type)
 update_geom_defaults("line", list(size = 1))
 saveplot(scplot(x),name='ssb_rel',dim=c(20,12),wd=.wd,type=type)
 
+p <- ggplot(melt(ntable(fit)),aes(x=Var1,y=Var2,size=value,col=value))+geom_point(alpha=0.8)+
+    scale_size(range = c(1,8)) +
+    labs(size="N",y='Age',x='Year')+
+    scale_color_viridis()+
+    guides(col=FALSE)
+saveplot(p,name='n',dim=c(17,10),wd=.wd,type=type)
+
+
 if(retro){
     r <- retro(x,year=7,parallell=FALSE,silent=TRUE)  #maybe make plot with relative change
     save(r, file=paste0('Rdata/retro/',name,'_retro.Rdata'))
@@ -57,8 +65,11 @@ if(retro){
 }
 
 if(res){
+    slope <- function(x){diff(quantile(x[!is.na(x)], c(0.25, 0.75)))/diff(qnorm(c(0.25, 0.75)))}
+    intercept <- function(x){quantile(x[!is.na(x)], c(0.25, 0.75))[1L] - diff(quantile(x[!is.na(x)], c(0.25, 0.75)))/diff(qnorm(c(0.25, 0.75))) * qnorm(c(0.25, 0.75))[1L]}
+    
     myres <- residuals(x)
-    saveplot(plot(myres,fleet=c(2,3),qq=FALSE),name="res",dim=c(20,10),wd=.wd,type=type)
+    saveplot(plot(myres,fleet=c(2,3),qq=TRUE),name="res",dim=c(20,10),wd=.wd,type=type)
 }
 
 if(procres){

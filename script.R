@@ -6,23 +6,25 @@
 #################################################################################################################
 ########### READ IN DATA ########################################################################################
 #################################################################################################################
+year <- 2018
+dir <- paste0('data/',year,'/')
 
-cn <- read.ices("data/cn.dat")
-ct <- read.ices("data/ct.dat")
-ctUSA <- read.ices("data/ctUSA.dat")
-ctForeign <- read.ices("data/ctForeign.dat")
-cw <- read.ices("data/cw.dat")
-dw <- read.ices("data/dw.dat")
-lf <- read.ices("data/lf.dat")
-lw <- read.ices("data/lw.dat")
-mo <- read.ices("data/mo.dat")
-nm <- read.ices("data/nm.dat")
+cn <- read.ices(paste0(dir,'cn.dat'))
+ct <- read.ices(paste0(dir,'ct.dat'))
+ctUSA <- read.ices(paste0(dir,'ctUSA.dat'))
+ctForeign <- read.ices(paste0(dir,'ctForeign.dat'))
+cw <- read.ices(paste0(dir,'cw.dat'))
+dw <- read.ices(paste0(dir,'dw.dat'))
+lf <- read.ices(paste0(dir,'lf.dat'))
+lw <- read.ices(paste0(dir,'lw.dat'))
+mo <- read.ices(paste0(dir,'mo.dat'))
+nm <- read.ices(paste0(dir,'nm.dat'))
 nm[]<- 0.27
-pf <- read.ices("data/pf.dat")
-pm <- read.ices("data/pm.dat")
-sw <- read.ices("data/sw.dat")
-sw0 <- read.ices("data/sw0.dat")
-surveys <- read.ices("data/survey.dat")
+pf <- read.ices(paste0(dir,'pf.dat'))
+pm <- read.ices(paste0(dir,'pm.dat'))
+sw <- read.ices(paste0(dir,'sw.dat'))
+sw0 <- read.ices(paste0(dir,'sw0.dat'))
+surveys <- read.ices(paste0(dir,'survey.dat'))
 surveys[[1]] <- surveys[[1]][!is.na(surveys[[1]]),1,drop=FALSE]
 attr(surveys[[1]],'time') <- c(0.47)
 
@@ -33,7 +35,7 @@ ctwusa[,2] <- ct[,2] + ctUSA[-c(1:8),1]*0.50
 
 dat <- setup.ccam.data(surveys=surveys,
                       residual.fleet=cn,
-                      total.catch=ctwusa,
+                      total.catch=ct,
                       prop.mature=mo,
                       stock.mean.weight=sw,
                       stock.start.weight=sw0,
@@ -71,6 +73,15 @@ fit <- ccam.fit(dat,conf,par,silent=TRUE)
 fit
 
 save(fit, file='Rdata/fit/fit.Rdata')
+load('Rdata/fit/fit.Rdata')
+
+library(TMB)
+res <- oneStepPredict(fit$obj, observation.name="logobs", data.term.indicator="keep", discrete=FALSE)
+
+#tried conditional 542:10..
+# should try the same with idx for obs as well where Total catch
+# But shouldn't all obs go into cpp in same format? Though it seems to work not fail like this.
+
 
 # plots
 # x <- fit
@@ -79,7 +90,7 @@ save(fit, file='Rdata/fit/fit.Rdata')
 
 
 # Jitter analyses: results sensitive to initial values?
-myjit <- jit(dat,conf,par,nojit=10,parallell = FALSE)  
+myjit <- jit(dat,conf,par,nojit=100,parallell = FALSE)  
 jittab <- jittable(myjit)
 write.table(jittab,"Rdata/fit/fit_jitter.txt")
 
