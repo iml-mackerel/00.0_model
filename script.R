@@ -35,7 +35,7 @@ ctwusa[,2] <- ct[,2] + ctUSA[-c(1:8),1]*0.50
 
 dat <- setup.ccam.data(surveys=surveys,
                       residual.fleet=cn,
-                      total.catch=ct,
+                      total.catch=ctwusa,
                       prop.mature=mo,
                       stock.mean.weight=sw,
                       stock.start.weight=sw0,
@@ -89,9 +89,16 @@ res <- oneStepPredict(fit$obj, observation.name="logobs", data.term.indicator="k
 # source('Rscripts/plot_fit.R')
 
 
-# Jitter analyses: results sensitive to initial values?
-myjit <- jit(dat,conf,par,nojit=100,parallell = FALSE)  
-jittab <- jittable(myjit)
-write.table(jittab,"Rdata/fit/fit_jitter.txt")
+# table for distribution
+res <- data.frame(ssb=ssbtable(fit)[,1],
+                  rec=rectable(fit)[,1],
+                  f=fbartable(fit)[,1],
+                  catch=catchtable(fit)[,1],
+                  exploit=exptable(fit)[,1]*100,
+                  age=rowSums(sweep(ntable(fit),2,1:10,'*'))/rowSums(ntable(fit)))
+res <- round(res,2)
+write.csv(res,"Rdata/fit/out.txt")
+
+
 
 

@@ -7,17 +7,18 @@
 #################################################################################################################
 ########### READ IN DATA ########################################################################################
 #################################################################################################################
+year <- 2018
+dir <- paste0('data/',year,'/')
 
-nm.alv <- read.ices("data/nm_Alverson.dat")
-nm.zhang <- read.ices("data/nm_Zhang.dat")
-nm.gisl <- read.ices("data/nm_Gislason.dat")
-nm.gund <- read.ices("data/nm_Gunderson.dat")
-nm.DFO2017 <- read.ices("data/nm_DFO2017.dat")
+nm.alv <- read.ices(paste0(dir,"nm_Alverson.dat"))
+nm.zhang <- read.ices(paste0(dir,"nm_Zhang.dat"))
+nm.gisl <- read.ices(paste0(dir,"nm_Gislason.dat"))
+nm.gund <- read.ices(paste0(dir,"nm_Gunderson.dat"))
+nm.DFO2017 <- read.ices(paste0(dir,"nm_DFO2017.dat"))
 
 load(file='Rdata/input/dat.Rdata')
 load(file='Rdata/input/conf.Rdata')
 load(file='Rdata/input/par.Rdata')
-
 
 Mrange <- seq(0.15,0.3,0.01)
 n <- length(Mrange)
@@ -57,3 +58,8 @@ savepng(recplot(Mruns,ci=FALSE),.wd,"recruitment",c(21,13))
 savepng(fitplot(Mruns,type='AIC',n=FALSE),.wd,"AIC",c(16,8))
 savepng(fitplot(Mruns,type='nll',n=FALSE),.wd,"nll",c(16,8))
 
+
+df <- data.frame(M=Mtypes,LRP=unlist(lapply(ypr(Mruns),'[','f40ssb'))*0.4)
+mLRP <- ggplot(df[df$M %in% c('0.27','DFO2017'),],aes(x=M,y=LRP))+geom_point()+
+    theme(axis.text.x = element_text(angle = 90, hjust = 1))
+saveplot(mLRP,name='LRP',dim=c(8,6),wd=.wd)

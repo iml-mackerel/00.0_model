@@ -7,7 +7,7 @@ wd  <-  'img/data'
 type  <- 'png'
 
 ### cn (catch-at-age in numbers)
-p1 <- bubble(cn,col='darkblue',scale = 10)+ggtitle('Raw')
+p1 <- bubble(cn,col='black',scale = 10)+ggtitle('Raw')
 saveplot(p1,name='cn_raw',dim=c(15,8),wd=wd,type=type)  # raw data
 
 p2 <- bubble(t(spay(t(cn))),scale = 8)+ggtitle('Standardised by year')
