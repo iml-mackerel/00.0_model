@@ -1,8 +1,8 @@
-# Mackerel assessment 2019
+# Mackerel stock assessment
 
-Rproject only to perform the mackerel stock evaluation  (2019).
+Rproject only to perform the mackerel stock evaluation.
 
-:construction: *under construction* :construction:
+Final 2019 has been submitted.
 
 # Information
 
@@ -14,5 +14,5 @@ Based on the CCAM package, which requires installation of Rtools and TMB.
 
 # Note
 
-The final fit should be saved.
+Final fit is available in Rdata/year/fit.Rdata
 
