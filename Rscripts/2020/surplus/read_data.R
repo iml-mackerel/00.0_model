@@ -27,7 +27,7 @@ sw0 <- read.ices(paste0(dir,'sw0.dat'))
 # attr(surveys[[1]],'time') <- c(0.47)
 survey <- read.ices(paste0(dir,'tep.dat'))
 survey[[1]] <- survey[[1]][!is.na(survey[[1]]),1,drop=FALSE]
-survey[[1]][,1] <- survey[[1]][,1]*1000000000000
+survey[[1]][,1] <- survey[[1]][,1]*10^12
 attr(survey[[1]],'time') <- c(0.47)
 pfem <- read.ices(paste0(dir,'propFemale.dat'))
 fec <- read.ices(paste0(dir,'fec.dat'))
@@ -69,6 +69,6 @@ par <- defpar(dat,conf)
 wdrdat <-paste0('Rdata/',year,'/input/')
 dir.create(wdrdat,showWarnings = F,recursive = T)
 
-save(dat,file=paste0(wdrdat,'dat.Rdata'))
-save(conf,file=paste0(wdrdat,'conf.Rdata'))
-save(par,file=paste0(wdrdat,'par.Rdata'))
+#save(dat,file=paste0(wdrdat,'dat.Rdata'))
+#save(conf,file=paste0(wdrdat,'conf.Rdata'))
+#save(par,file=paste0(wdrdat,'par.Rdata'))

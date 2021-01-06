@@ -4,8 +4,8 @@
 #*** based on CCAM package
 #################################################################################################################
 
-ny=3
-nosim=2000
+ny=3        # number of years going to forecast
+nosim=2000  # number of simulations
 
 #--------------------- projections ------------------------------------------
 load('Rdata/2018/fit.Rdata')
@@ -14,18 +14,18 @@ proj <- list(fit=fit,
                nosim=nosim,
                OMlabel='OMassess',
                ave.years=tail(fit$data$years,10),
-               rec.years=1969:2018,
+               rec.years=1969:2020,                 # years of recruitment on which projections will be based
                rec.meth=2, #mean with AC
                UL.years=tail(fit$data$years,25),
                deadzone=1000,
                Flim=2.5)
 
 
-attr(proj$rec.meth,'AC')=0.9
+attr(proj$rec.meth,'AC')=0.9   # autocorrelation in recruitment (acf(rectable(Fit)#estimate))
 
 # --------------------- base MPs ----------------------------------------------
 
-nMP=11
+nMP=10
 
 MP1 <- list(MPlabel='MP1',
             IE=NULL,
@@ -37,21 +37,17 @@ copy(x=MP1,n=nMP,name=c('MP'))
 avail('MP')
 #MP1$catchval <- rep(0,ny)
 MP2$catchval <- rep(0,ny)
-MP3$MP <- rep('MPeggsimple',ny)
-MP4$MP <- rep('MPeggcomplex0',ny)
-MP5$MP <- rep('MPeggcomplex',ny)
-MP6$MP <- rep('MPeggcomplexramp',ny)
-MP7$MP <- rep('MPeggcomplex2000',ny)
-MP8$MP <- rep('MPeggcomplex4000',ny)
-MP9$MP <- rep('MPeggcomplex6000',ny)
-MP10$MP <- rep('MPeggcomplex8000',ny)
-MP11$MP <- rep('MPeggcomplex10000',ny)
+MP3$catchval <- rep(2000,ny)
+MP4$catchval <- rep(4000,ny)
+MP4$catchval <- rep(6000,ny)
+MP4$catchval <- rep(8000,ny)
+MP4$catchval <- rep(10000,ny)
 
 #******************************************************************************
 #************* Create all forecasting scenarios *******************************
 #******************************************************************************
 
-IEs <- c("IEindep2019")
+IEs <- c("IEindep2019") # needs to be changed (ie.r in CCAM)
 OMs <- c('proj')
 MPs <-paste0('MP',2:nMP)
 
@@ -61,7 +57,7 @@ scenmat <- data.frame(apply(scenmat,2,as.character))
 scen.list <- lapply(split(scenmat,1:nrow(scenmat)),function(x){
     OMx <- get(as.character(x[1,1]))
     MPx <- get(as.character(x[1,2]))
-    MPx$IE <- c(as.character(x[1,3]),'IEdep2550')
+    MPx$IE <- c(as.character(x[1,3]),'IEdep5075')  # IEdep2550 = US missing catch scenario (needs to be 50-75 if that's waht was presumed in the past)
     c(OMx,MPx)
 })
 scenmat$IE <- lapply(scen.list,function(x) paste(x$IE,collapse='.'))
@@ -77,7 +73,7 @@ Date = Sys.Date()
 DateDir = paste0("Rdata/",Date,"/")
 dir.create(DateDir,showWarnings = FALSE)
 
-year <- 2018
+year <- 2020
 dir <- paste0('data/',year,'/')
 ctUSA <- read.ices(paste0(dir,'ctUSA.dat'))
 
@@ -93,7 +89,7 @@ multi.forecast(scen.list,DateDir,parallel=FALSE,ncores=7)
     # class(runlist) <- 'forecastset'
     # save(runlist, file='Rdata/proj.new.Rdata')
 
-load(file='Rdata/2018/proj.Rdata')
+load(file='Rdata/2020/proj.Rdata')
 refBase <- ypr(fit)
 REF <- refBase$f40ssb
 LRP <- REF*0.40

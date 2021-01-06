@@ -56,6 +56,6 @@ conf$obsLikelihoodFlag[1]='CE'
 
 par <- defpar(dat,conf)
 
-save(dat,file=paste0('Rdata/',year,'/input/dat.Rdata'))
-save(conf,file=paste0('Rdata/',year,'/input/conf.Rdata'))
-save(par,file=paste0('Rdata/',year,'/input/par.Rdata'))
+#save(dat,file=paste0('Rdata/',year,'/input/dat.Rdata'))
+#save(conf,file=paste0('Rdata/',year,'/input/conf.Rdata'))
+#save(par,file=paste0('Rdata/',year,'/input/par.Rdata'))
