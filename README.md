@@ -8,8 +8,8 @@ The year refers to the last year of data used in the assessment and not the asse
 * 2018: assessment of 2019
   - Science Advisory Report: https://www.dfo-mpo.gc.ca/csas-sccs/Publications/SAR-AS/2019/2019_035-eng.pdf
   - Research document: http://www.dfo-mpo.gc.ca/csas-sccs/Publications/ResDocs-DocRech/2020/2020_013-eng.pdf 
-* 2020: assessment of 2021 
-				(YET TO TAKE PLACE!! CREATED TO EVALUATE IMPACT OF COVID ON DATA AVAILABILITY)
+* 2020: assessment of 2021
+  - February 25-26, 2021
 
 # Information
 
