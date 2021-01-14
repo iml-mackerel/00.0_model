@@ -43,6 +43,10 @@ rm(nafo_21a)
 ## For simplicity I am assuming the EEZ extends past the 200 nm limit if the bounds of the nafo divsions extend beyond it
 sort(unique(nafo_mack_21a$Division))
 
+# NAFO subarea
+nafo_mack_21a %<>% mutate(subarea = str_sub(Division,1,1))
+
+# Exclusive Economic Zone (or what would fall there prior to establishment)
 nafo_mack_21a %<>%
     mutate(eez = ifelse(
         Division %in% c(
@@ -99,21 +103,36 @@ nafo_mack_21a %<>% mutate(nation = fct_collapse(
                  "CANADA MARITIMES & QUEBEC - CAN-MQ")
 ))
 
+
 ## Subset and rename variables for simplicity
 nafo_mack_21a %<>% 
-    transmute(year = Year, country = Country, nation = nation, eez = eez, division = Division, landings_t = Kg)
+    transmute(year = Year, country = Country, nation = nation, eez = eez, subarea, division = Division, landings_t = Kg)
 
-## Subset to just Canadian EEZ
-nafo_mack_can <- nafo_mack_21a %>% dplyr::filter(eez == "canada_eez") %>% 
-    dplyr::select(year, nation, landings_t) %>% 
-    group_by(year, nation) %>% 
-    dplyr::summarise(landings_t = sum(landings_t)) %>% 
-    pivot_wider(names_from = nation, values_from = landings_t)
+## Subset to EEZs and Nation (unknown attributed to US EEZ unless landed by canada; some Canadian landings in USA EEZ and assigned to us eez)
+nafo_can_eez_c <- nafo_mack_21a %>% dplyr::filter(eez == "canada_eez" & nation == "Canada") %>% mutate(group = "nafo_can_eez_c")
+nafo_can_eez_f <- nafo_mack_21a %>% dplyr::filter(eez == "canada_eez" & nation %in% c("Foreign", "USA")) %>% mutate(group = "nafo_can_eez_f")
+nafo_usa_eez_u <- nafo_mack_21a %>% dplyr::filter(eez == "usa_eez" & nation == "USA") %>% mutate(group = "nafo_usa_eez_u")
+nafo_usa_eez_f <- nafo_mack_21a %>% dplyr::filter(eez == "usa_eez" & nation %in% c("Foreign", "Canada")) %>% mutate(group = "nafo_usa_eez_f")
 
-## Calculate lotal landings in Canadian EEZ from all sources
-nafo_mack_can %<>% mutate(landings_nafo_t = sum(Canada, Foreign, USA, na.rm = T))
+# Get DFO region splits
+nafo_can_eez_c  %<>%  
+    mutate(region = ifelse(country == "CANADA GULF - CAN-G", "G",
+                           ifelse(country == "CANADA NEWFOUNDLAND - CAN-N", "N", 
+                                  ifelse(country == "CANADA QUEBEC - CAN-Q", "Q", 
+                                         ifelse(country %in% c("CANADA MARITIMES - CAN-M","CANADA SCOTIA - FUNDY - CAN-SF"), "S",
+                                                ifelse(country == "CANADA MARITIMES & QUEBEC - CAN-MQ" & division %in% c("4R","4S","4T"),"Q","S")
+                                         )))))
 
-# 21B database (Annual)
+nafo_can_eez_f  %<>%  
+    mutate(region = ifelse(division %in% c("3K","3L","3N","3O","3PS"),"N","S"))
+    
+# save files 
+save(nafo_can_eez_c, file = "Rdata/nafo_can_eez_c.Rdata")
+save(nafo_can_eez_f, file = "Rdata/nafo_can_eez_f.Rdata")
+save(nafo_usa_eez_u, file = "Rdata/nafo_usa_eez_u.Rdata")
+save(nafo_usa_eez_f, file = "Rdata/nafo_usa_eez_f.Rdata")
+
+# 21B database (Monthly)
 
 ## look at distribution of monthly landings
 glimpse(nafo_21b)
