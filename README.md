@@ -11,6 +11,8 @@ Research documents, Stock Assessment Reports, and meeting proceedings can be fou
 * The Federal Science Library: https://science-libraries.canada.ca/eng/home/
 * or The North Atlantic Fisheries Organisation's (NAFO) publications site: https://www.nafo.int/Publications
 
+The assessments performed by the U.S.A. evaluates the entire Northwest Atlantic stock (northern and southern spawning contingents). Assessments are done by NOAA Fisheries' Northeast Fisheries Science Centre (NEFSC). Documents can be found here: https://apps-nefsc.fisheries.noaa.gov/saw/reviews_report_options.php
+
 Data and model output for the 2016, and 2018 assessments can be found in the master branch here: https://github.com/iml-assess/mackerel_assessment/
 * 2016: input data for the 2017 assessment. A different model was used back then and hence no output is provided.
 * 2018: assessment of 2019
