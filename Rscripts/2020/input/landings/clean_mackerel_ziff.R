@@ -119,13 +119,34 @@ unique(mackerel_ziff$div_caa)
 save(mackerel_ziff, file = "Rdata/mackerel_ziff.Rdata") # last updated in the second week of December 2020.
 
 # Format for CCAM
-ziff <- mackerel_ziff %>% group_by(year) %>% dplyr::summarise(landings_ziff_t = sum(pds_vif)/1000)
 
-# Will have to manually fill in 2017-2020 landings data for ct.dat
-# 2017 = 9783.359; 2018 = 12029.13; 2019 = 9254.144; 2020 = 9295.369 or 8373.241 (see below)
+## Need to group by year and DFO region to apply bait scaling factors 
+df <- mackerel_ziff %>% group_by(region, province, subdivision) %>% dplyr::summarise(n = n())
+# all regions that = L (Laurentian are Quebec region), all regions that are NA are also Quebec region
 
-save(ziff, file = "Rdata/ziff.Rdata")
-write.csv(ziff, file = "csv/ziff.csv", row.names = F)
+# Summarize data
+ziff <- mackerel_ziff %>%
+  group_by(year, region) %>%
+  dplyr::summarise(landings_ziff_t = sum(pds_vif)/1000)
+
+# explicit NA
+ziff %<>% mutate(region = fct_explicit_na(region, na_level = "Q"))
+# Laurentian = Q
+ziff %<>% mutate(region = fct_collapse(region, "Q" = "L"))
+
+# Make wide
+ziff %<>% pivot_wider(names_from = region, values_from = landings_ziff_t) 
+
+# Fill in missing Gulf values for 2018 and 2020 (see Quality Check section below for explanation)
+ziff[34,2] <- 3455.939 # 2018 from gulf quota report
+ziff[35,2] <- 2778.677 # 2019 from gulf quota report
+ziff[36,2] <- 3473.822 # 2020 from gulf quota report
+
+# Summarize data 
+ziff %<>% mutate(total_can_ziff = G + N + Q + S)
+
+# Save data
+save(ziff, file = "Rdata/ziff.Rdata") 
 
 #####################  QUALITY CHECK  ####################
 
@@ -162,6 +183,7 @@ ziff_table <- mackerel_ziff %>% group_by(year, region) %>%
 
 # 2018 total = 5625.213 + 1426.380 + 1521.602 + 3455.939 =
 # 12029.13 t; 120.2913 % over the TAC (not including foreign) vs. 10499 t as reported in the last assessment
+# 2018 Gulf from prelim ziff file from Gaelle = 2259.688 = total = 10833
 
 # 2019
 # G = 2150.688
@@ -188,7 +210,6 @@ ziff_table <- mackerel_ziff %>% group_by(year, region) %>%
 # public 2020 = 3473.822	(NB = 318.281; PEI = 1454.224; NS = 126.072; QC = 653.117, Scotia Fundy (why are they there?!) = 875.817; NL (again, wtf?!) = 46.311)
 
 # From Jenness on December 10th:
-
 # 2020 Total landings to date	(10-Dec)
 # NL: 4014		ziff says 4013.918
 # Mar: 1294		ziff says 1128.48
@@ -198,4 +219,4 @@ ziff_table <- mackerel_ziff %>% group_by(year, region) %>%
 # total as per ziff file = 5821.547 t whereas,
 # total as per Jenness = 7934	t
 # total if ziff + gulf quota report (total) = 9295.369
-# total if ziff + gulf quota report (w/o scotia-fundy and NL) = 2551.694 + 5821.547 = 8373.241 t
+# total if ziff + gulf quota report (w/o scotia-fundy and NL) = 2551.694 + 5821.547 = 8373.241 t   why are there SF and NL landings in 4T?
