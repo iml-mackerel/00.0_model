@@ -1,4 +1,4 @@
-# Mackerel stock assessment
+# Northwest Atlantic Mackerel stock assessment
 
 Rproject to perform the stock assessment for the northern contingent of the Northwest Atlantic stock of Atlantic mackerel 
 
@@ -31,11 +31,13 @@ The stock assessment used is a censured catch at age model (CCAM), which require
 * CCAM:		devtools::install_github("elisvb/CCAM")
 * Additional R packages used/needed are detailed in the scripts. 
 
-# Notes
+# Data and model output
 
-Final fits for the base model and sensitivity runs will be available in https://github.com/iml-assess/mackerel_assessment/tree/mackerel_2021/Rdata/2021/fit/
 
-The 2021 branch will be pushed to the master branch following peer review
+* input data : mackerel_assessment/data/2020/
+* fitted model : mackerel_assessment/Rdata/2020/
+* model summary : mackerel_assessment/csv/2020/
+* short-term projections : mackerel_assessment/Rdata/2020/proj/
 
 # Contacts
 
