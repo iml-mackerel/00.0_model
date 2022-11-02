@@ -8,6 +8,7 @@ library(zoo)
 x <- get(load(file='Rdata/fit/fit.Rdata'))
 ct <- read.ices('data/2018/ct.dat')
 
+x <- fitBase_run_2
 
 catch <- catchtable(x)
 d <- x$data

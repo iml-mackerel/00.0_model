@@ -1,22 +1,22 @@
 #################################################################################################################
 #*** Mackerel MSE
-#*** Canadian mackerel (DFO, 2018)
-#*** COMPARE Different M in operating models
+#*** Canadian mackerel (DFO, 2020)
+#*** COMPARE Different catch limits in operating models
 #################################################################################################################
 
 #################################################################################################################
 ########### DIffferent fractions US ########################################################################################
 #################################################################################################################
 
-load(file='Rdata/input/dat.Rdata')
-load(file='Rdata/input/conf.Rdata')
-load(file='Rdata/input/par.Rdata')
+load(file='Rdata/input/dat_base_2020.Rdata')
+load(file='Rdata/input/confbase_2020.Rdata')
+load(file='Rdata/input/parbase_2020.Rdata')
 
-year <- 2018
+year <- 2020
 dir <- paste0('data/',year,'/')
 
-ct <- read.ices(paste0(dir,'ct.dat'))
-ctUSA <- read.ices(paste0(dir,'ctUSA.dat'))
+ct <- read.ices(paste0(dir,'ct_2020.dat'))
+ctUSA <- read.ices(paste0(dir,'ctUSA_2020.dat'))
 
 clow <- c(0,0.25,0.50,0.75)
 chigh <- c(0.25,0.50,0.75,1)
@@ -49,16 +49,16 @@ Cruns <- lapply(mydats,function(x){ccam.fit(x,conf,par,silent=TRUE) })
 class(Cruns) <- 'ccamset'
 names(Cruns) <- Ctypes
 
-save(Cruns,file='Rdata/fit_compare/C.Rdata')
+save(Cruns,file='Rdata/2020/fit_compare/C.Rdata')
 #load(file='Rdata/fit_compare/C.Rdata')
 
-.wd <- 'img/fit_compare/C/'
+.wd <- 'img/2020/fit_compare/C/'
 dir.create(.wd, showWarnings = FALSE)
 
 savepng(ssbplot(Cruns,ci=FALSE),.wd,"SSB",c(17,10))
 savepng(catchplot(Cruns,ci=FALSE),.wd,"catch",c(17,10))
-savepng(recplot(Cruns,ci=FALSE),.wd,"recruitment",c(17,10))
-savepng(plot(Cruns,ci=FALSE,linesize=1),.wd,"all",c(14,15))
+savepng(recplot(Cruns,ci=FALSE)+ xlim(1968,2020) + ylim(0,900000),.wd,"recruitment",c(17,10))
+savepng(plot(Cruns,ci=FALSE),.wd,"all",c(14,15))
 savepng(fitplot(Cruns,type='AIC',n=FALSE),.wd,"AIC",c(16,8))
 savepng(fitplot(Cruns,type='nll',n=FALSE),.wd,"nll",c(16,8))
 

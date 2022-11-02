@@ -1,7 +1,7 @@
 #################################################################################################################
 #*** Mackerel MSE
-#*** Canadian mackerel (DFO, 2018)
-#*** COMPARE Different M in operating models
+#*** Canadian mackerel (DFO, 2020)
+#*** COMPARE Different selectivity in operating models
 #################################################################################################################
 
 #################################################################################################################
@@ -26,7 +26,7 @@ for(i in selrange){
 # sel in 2 blocks
 nrow(conf$keySel)
 block1 <- matrix(c(0,1,2,3,4,4,4,4,4,4), nrow=length(c(1968:2000)), ncol=ncol(conf$keySel),byrow = T)
-block2 <- matrix(c(0,1,2,3,4,4,4,4,4,4)+5, nrow=length(c(2001:2018)), ncol=ncol(conf$keySel),byrow = T)
+block2 <- matrix(c(0,1,2,3,4,4,4,4,4,4)+5, nrow=length(c(2001:2020)), ncol=ncol(conf$keySel),byrow = T)
 newsel <- rbind(block1,block2)
 nrow(newsel)
 conf$keySel <- newsel

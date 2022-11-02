@@ -6,11 +6,12 @@
 
 #fit <- get(load(file=paste0('Rdata/',year,'/fit/fit.Rdata')))
 
-name <- 'fitBase'
+name <- 'fit'
 type <- 'png'
 retro <- FALSE
 res <- FALSE
 procres <- FALSE
+colours <- c("#440154FF", "#482878FF", "#3E4A89FF", "#31688EFF", "#26828EFF", "#1F9E89FF", "#35B779FF", "#6DCD59FF","#B4DE2CFF", "#FDE725FF")
 
 .wd <- paste0('img/',year,'/fit/',name)
 dir.create(.wd, showWarnings = FALSE,recursive = T)
@@ -19,7 +20,7 @@ update_geom_defaults("line", list(size = 0.6))
 ### reference points
 refBase <- ypr(fit,rec.years=1969:2016)
 yr <- range(fit$data$year)
-yr[1] <- yr[1]+1
+yr[1] <- yr[1] + 1
 
 ### plots
 x <- fit
@@ -52,7 +53,7 @@ saveplot(p1,name='sr_rp',dim=c(16,10),wd=.wd,type=type)
 
 p2 <- ssbplot(x)+scale_y_continuous(limits=c(0,8e5),expand = c(0,0))+geom_hline(yintercept = refBase$f40ssb)+
     geom_hline(yintercept = refBase$f40ssb*0.8,col='darkgreen')+
-    geom_hline(yintercept = refBase$f40ssb*0.4,col='darkred')
+    geom_hline(yintercept = refBase$f40ssb*0.4,col='darkred') + scale_x_continuous(limits=c(1968,2020),expand = c(0,1))
     
 saveplot(p2,name='ssb_rpF40',dim=c(10,6),wd=.wd,type=type)
 
@@ -76,12 +77,16 @@ p5 <- ssbplot(x,years=2000:2018)+scale_y_continuous(limits=c(0,4e5),expand = c(0
 
 saveplot(p5,name='ssb_rpmsyend',dim=c(6,6),wd=.wd,type=type)
 
-p6 <- ggplot(melt(ntable(fit)),aes(x=Var1,y=Var2))+geom_point(alpha=0.8,aes(size=value,col=value))+
-    scale_size(range = c(1,8)) +
-    labs(size="N",y='Age',x='Year')+
+p6 <- ggplot(melt(ntable(fit)),aes(x=Var1,y=Var2))+geom_point(alpha=0.8,aes(size=value/1000,col=value))+
+    scale_size(range = c(0,10), breaks = c(0, 250, 500, 750, 1000) ) +
+    labs(size="N (thousands)",y='Age',x='Year')+
     scale_color_viridis()+
+    scale_y_continuous(n.breaks = 10) +
     guides(col=FALSE)
 saveplot(p6,name='n',dim=c(16,10),wd=.wd,type=type)
+
+p7 <- 
+    saveplot(p6,name='n',dim=c(16,10),wd=.wd,type=type)
 
 # pa <- p2+geom_text(aes(x=-Inf,y=Inf,label='A)'),hjust=-0.5,vjust=2)
 # pb <- p6+theme(legend.position = 'none')+geom_text(aes(x=-Inf,y=Inf,label='B)'),hjust=-0.5,vjust=2)
@@ -95,6 +100,14 @@ saveplot(p6,name='n',dim=c(16,10),wd=.wd,type=type)
 #     cbind(ggplotGrob(pe), ggplotGrob(pf), size="first"),
 #     size='first')),name='RESDOC',dim=c(22,22),wd=.wd,type=type)
 
+pa <- p2+scale_x_continuous()
+pb <- p6+theme(legend.position = 'none')+scale_x_continuous()
+pc <- recplot(x,years=yr[1]:yr[2])+scale_x_continuous()
+pd <- srplot(x,curve=T)+labs(y='')+scale_x_continuous()
+pe <- fbarplot(x)+scale_y_continuous(limits=c(0,4.2),expand = c(0,0))+ geom_hline(yintercept = refBase$f40)+scale_x_continuous()
+pf <- catchplot(x,fleet = 1,ci=FALSE)+scale_y_continuous(limits=c(0,105000),expand = c(0,0))+ylab('Catch ')+scale_x_continuous()
+dd <- plot_grid(pa,pb,pc,pd,pe,pf, align = "hv", labels = c("A","B","C","D","E","F"),ncol = 2)
+saveplot(dd,name='RESDOC',dim=c(22,22),wd=.wd,type=type) 
 
 if(retro){
     r <-retro(x,year=7,parallell=FALSE,silent=TRUE)  #maybe make plot with relative change
