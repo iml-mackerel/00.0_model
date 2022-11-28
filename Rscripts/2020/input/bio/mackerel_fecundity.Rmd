@@ -1,0 +1,364 @@
+---
+title: "Mackerel Fecundity"
+output: html_notebook
+chunk_output_type: console
+---
+# Context
+
+The purpose of this document is to reanalyze mackerel fecundity data originally documented in Pelletier (1986). The new fecundity estimates will be used to create an age * year fecundity matrix for use in the current (2020) Atlantic mackerel stock assessment model (CCAM). This is currently only being considered for the northern contingent of the Northwest Atlantic stock. 
+
+## Reference
+Pelletier, L. 1986, Fécondité du maquereau bleu, Scomber scombrus L., du golfedu Saint-Laurent. Rapp. tech. can. sci. halieut. aquat. 1467: v + 37 p.
+
+Data were compiled by Mélanie Boudreau from archived hand written notes and printed Atlantic mackerel data originally analysed by Line Pelletier under the supervision of Jean Jaques Maguire 
+
+## Original paper abstract
+
+La fécondité du maquereau bleu, Scomber scombrus L., est estimée à partir des ovaires de 214 poissons recuellis dans le golfe du Saint-Laurent au cours des années 1982, 1983, 1984 et 1985. La fécondité varie entre 87 750 et 1 610 000 oeufs par femelle. Les relations entre la fécondité et le poids des ovaires, la longueur, l'age et le poids du poisson sont décrites. L'équation de la relation entre la fécondité et les poids des ovaires de maquereaux, sur le point de pondre, est retenue comme le meilleur outil de prédiction de la fécondité. Les resultats des quatre annees d'echantillionnage mettent en evidence des varitions temporelles de la fecondite entre les annnes ainsi qu'au cours d'une meme saison de fraie. Des equations incluant la date de capture du poisson sur l'aire de fraie sont proposees pour estimer la fecondite du maquereau du golfe de Saint-Laurent.
+
+# load packages
+```{r, echo = F}
+packages = c('magrittr','lubridate','tidyverse','cowplot','ggridges','broom','ggeffects','performance','readxl' )
+invisible(lapply(packages, function(x) {if (!require(x, character.only = T)) {install.packages(x);require(x)}}))
+
+```
+
+# load data
+```{r}
+mackerel_fecundity_pelletier <- read_excel("~/My Stocks/Mackerel/mackerel_fecundity_pelletier.xlsx")
+```
+
+
+# look at data
+```{r}
+glimpse(mackerel_fecundity_pelletier)
+
+# new variables
+mackerel_fecundity_pelletier %<>% mutate(mass_somatic = `Total weight` - `ovaires weight`, gsi = `ovaires weight` / mass_somatic * 100)
+mackerel_fecundity_pelletier$mass_gonad <- mackerel_fecundity_pelletier$`ovaires weight`
+mackerel_fecundity_pelletier$doy <- mackerel_fecundity_pelletier$`Day of capture`
+mackerel_fecundity_pelletier$f_age <- as.factor(mackerel_fecundity_pelletier$AgeF)
+
+# figures
+p1 <- mackerel_fecundity_pelletier %>% ggplot(aes(Length, fecondity, colour = year)) + geom_point()
+p2 <- mackerel_fecundity_pelletier %>% ggplot(aes(mass_somatic, fecondity)) + geom_point()
+p3 <- mackerel_fecundity_pelletier %>% ggplot(aes(AgeF, fecondity)) + geom_point()
+p4 <- mackerel_fecundity_pelletier %>% ggplot(aes(`ovaires weight`, fecondity)) + geom_point()
+p5 <- mackerel_fecundity_pelletier %>% ggplot(aes(`Day of capture`, fecondity)) + geom_point()
+p6 <- mackerel_fecundity_pelletier %>% ggplot(aes(gsi, fecondity)) + geom_point()
+
+
+plot_grid(p1, p2, p3, p4, p5, p6, labels = c('A', 'B', 'C', 'D', 'E', 'F'), label_size = 12)
+
+```
+
+# Run linear models on each variable seperately as per Pelletier 1986 and compare
+
+Note that Pelletier used log base 10 and note the natural logarithm... try both!
+```{r}
+
+# original analyses by Pelletier 1986
+m1 <- lm(log10(fecondity) ~ log10(Length), data = mackerel_fecundity_pelletier)
+m2 <- lm(log10(fecondity) ~ log10(`Total weight`), data = mackerel_fecundity_pelletier)
+m3 <- lm(log10(fecondity) ~ log10(AgeF), data = mackerel_fecundity_pelletier)
+m4 <- lm(log10(fecondity) ~ log10(`ovaires weight`), data = mackerel_fecundity_pelletier)
+m5 <- lm(log10(fecondity) ~ log10(`Day of capture`), data = mackerel_fecundity_pelletier)
+m6 <- lm(log10(fecondity) ~ log10(gsi), data = mackerel_fecundity_pelletier)
+
+# ... but I get slightly different answers
+# probably just the way the computer did regressions back in the day
+
+summary(m1)  
+summary(m2)
+summary(m3)
+summary(m4)
+summary(m5)
+summary(m6)
+
+check_model(m1)
+check_model(m2)
+check_model(m3)
+check_model(m4)
+check_model(m5)
+check_model(m6)
+```
+# Something more sensible
+
+Conclusion of this chunk is that only day of year and gonad mass have big effects and are significant. Also AIC and RMSE show models using only them as params have better fit. Conclusion. the axe! go to next chunk
+```{r}
+library(mgcv);library(gratia)
+library(tweedie)
+library(statmod)
+
+# While day of year was significant for Pelletier and there is a decreasing fecundity as the season progresses, it is larger individuals that show up first and so age and doy are not indepenant of one another and thus break glm assumptions. So, only age and gonad mass will be used as independant variables. 
+
+# exploring different models
+
+```
+
+# Refined models, and a plus group 
+```{r}
+library(forcats)
+glimpse(mackerel_fecundity_pelletier)
+
+# plus group and other variables
+mackerel_fecundity_pelletier$f_age <- as.factor(mackerel_fecundity_pelletier$AgeF)
+mackerel_fecundity_pelletier %<>% mutate(age_plus = fct_collapse(f_age,
+  "10" = c("10","11","12","13","14","15","16","17")
+))
+
+# numeric version
+mackerel_fecundity_pelletier %<>% mutate(age_plus_n = as.numeric(as.character(age_plus)))
+
+#subset
+mackerel_fecundity_pelletier %<>% transmute(year = year,age = age_plus_n, mass_gonad = `ovaires weight`, fecundity = fecondity)
+
+
+# estimate p outside of model
+estimate_p <- tweedie.profile(
+  glm(log(fecundity) ~ age + mass_gonad,
+      data = mackerel_fecundity_pelletier),
+  method = "mle",
+  do.plot = TRUE,
+  verbose = 2,
+  do.ci = TRUE
+) 
+
+estimate_p$xi.max # 1.714286
+estimate_p$ci # NA 1.970344
+
+# glm normal distribution log link and glm tweedie (compound poisson) distribution with log link
+lm_1 <- lm(log(fecundity) ~ age + mass_gonad,
+      data = mackerel_fecundity_pelletier)
+
+glm_tw <- glm(log(fecundity) ~ age + mass_gonad,
+      data = mackerel_fecundity_pelletier,
+               family = tweedie(var.power = 1.714286, link.power = 0))
+
+# this model retained
+glm_norm <- glm(log(fecundity) ~ age + mass_gonad,
+      data = mackerel_fecundity_pelletier %>% dplyr::filter(mass_gonad<300),
+               family = gaussian(link = "identity"))
+
+glm_norm2 <- glm(log(fecundity) ~ age + mass_gonad,
+      data = mackerel_fecundity_pelletier,
+               family = gaussian(link = "log"))
+
+glm_norm3 <- glm(fecundity ~ age + mass_gonad,
+      data = mackerel_fecundity_pelletier,
+               family = gaussian(link = "identity"))
+
+glm_norm4 <- glm(fecundity ~ age + mass_gonad,
+      data = mackerel_fecundity_pelletier,
+               family = gaussian(link = "log"))
+
+gam_tw <- gam(log(fecundity)~ age + s(mass_gonad), family = Tweedie(p = 1.714286, link = "log"), data = mackerel_fecundity_pelletier)
+
+gam_norm <- gam(log(fecundity)~ age + s(mass_gonad), family = gaussian(), data = mackerel_fecundity_pelletier)
+
+gam_norm2 <- gam(log(fecundity)~ age + s(mass_gonad), family = gaussian(link = "log"), data = mackerel_fecundity_pelletier)
+  
+
+model_performance(glm_norm)
+
+compare_performance(lm_1, glm_tw, glm_norm, glm_norm2,glm_norm3,glm_norm4,gam_tw,gam_norm,gam_norm2, rank = T)
+# Model     | Type |     AIC |     RMSE |    Sigma |          BF | Performance_Score
+# ----------------------------------------------------------------------------------
+# gam_norm  |  gam |  112.03 |     0.31 |     0.32 |   BF > 1000 |           100.00%
+# gam_norm2 |  gam |  112.28 |     0.31 |     0.32 | BF = 947.23 |           100.00%
+# gam_tw    |  gam |  118.05 |     0.03 |     0.04 |  BF = 55.59 |            99.96%
+# glm_norm  |  glm |  148.92 |     0.35 |     0.35 |   BF = 1.00 |            99.76%
+# lm_1      |   lm |  148.92 |     0.35 |     0.35 |   BF = 1.00 |            99.76%
+# glm_norm2 |  glm |  152.22 |     0.35 |     0.35 |  BF = 0.192 |            99.74%
+# glm_tw    |  glm |  157.50 |     0.04 |     0.04 |   BF = 1.00 |            99.70%
+# glm_norm3 |  glm | 5177.91 | 1.70e+05 | 1.71e+05 |  BF < 0.001 |             5.14%
+# glm_norm4 |  glm | 5207.50 | 1.84e+05 | 1.85e+05 |  BF < 0.001 |             0.00%
+# 
+# Model gam_norm (of class gam) performed best with an overall performance score of 100.00%.
+
+# so the model with a normal family distribution and normal error structure performs best
+plot(glm_norm2)
+1-pchisq(glm_norm$null.deviance-glm_norm$deviance, lm_1$df.null-lm_1$df.residual)
+# check best models
+
+check_model(glm_norm)
+check_model(gam_norm)
+# gam has multicollinearity problems so choose glm
+
+rm(gam_norm);rm(gam_norm2);rm(gam_tw);rm(glm_norm2);rm(glm_norm3);rm(glm_norm4)
+rm(glm_tw)
+
+```
+
+# Effects plots
+```{r}
+# effects plots
+dat<-ggpredict(glm_norm)
+plot(dat)
+
+```
+
+
+# load current mackerel data  but use caa
+```{r}
+load("~/My Stocks/Mackerel/mackerel_sar_2021/mackerel_model_2021/mackerel_assessment_input/Rdata/mackerel_bio.Rdata")
+```
+
+# massage data
+```{r}
+# get extra ages from global alk to boost n
+# subset data and create plus group
+glimpse(mackerel_bio)
+unique(mackerel_bio$AGE)
+mackerel_bio %<>% transmute(year = year, mass = mass, length = length, mass_gonad = mass_gonad, maturity = maturity, age = as.numeric(as.character(age)), doy = doy, quarter = quarter, sex = sex)
+
+# Add length category variable (5mm)
+mackerel_bio <- mackerel_bio %>% 
+  mutate(lcat5 = FSA::lencat(length, w = 5))
+
+mack_aged <- dplyr::filter(mackerel_bio,!is.na(age), age>1) 
+mack_aged %<>% dplyr::filter(length > 100, length < 500, mass > 1, !is.na(length), !is.na(mass), !is.na(lcat5))
+bad<-c(78501,78504,78515)
+mack_aged <- mack_aged[-bad,]
+mack_unaged <- mackerel_bio %>% dplyr::filter(is.na(age)) %>% dplyr::filter(!is.na(length), length > 100)
+
+mack_aged$f_age<-as.factor(mack_aged$age)
+mack_aged %<>% mutate(age_plus = fct_collapse(f_age,
+                                                 "10" = c("10","11","12","13","14","15","16","17","18","42","63")
+))
+mack_aged %<>% mutate(age_plus = as.numeric(as.character(age_plus)))
+mack_unaged %<>% mutate(age_plus = as.numeric(NA))
+mack_unaged %<>% mutate(f_age = as.factor(NA))
+names(mack_aged)
+names(mack_unaged)
+summary(mack_unaged)
+mack_unaged %<>% dplyr::filter(lcat5>135)
+# OBSERVED A-L FREQUENCIES (AGE X LENGTH CATEGORY) 
+alk.freq <- xtabs(~lcat5+age_plus,data = mack_aged)
+
+# PROPORTIONS PER AGE AND LENGTH CATEGORY
+alk <- prop.table(alk.freq,margin = 1)
+
+# estimate ages of unaged samples
+mack_est_age <- alkIndivAge(alk, age_plus ~ length, data = mack_unaged)
+mack_aged$age_plus<-as.numeric(as.character(mack_aged$age_plus))
+mackerel_bio <- bind_rows(mack_aged,mack_est_age)
+
+mackerel_bio  %<>%  dplyr::filter(!is.na(mass_gonad),!is.na(age_plus), sex == "F", maturity == "5")
+
+mackerel_bio %<>% dplyr::select(year, age_plus, mass_gonad) %>% transmute(year=year,age=age_plus,mass_gonad=mass_gonad)
+
+mackerel_bio %<>% dplyr::filter(age>0)
+mackerel_bio %<>% as_tibble()
+```
+
+# use model to fit fecundity estimates on to mackerel bio data
+```{r}
+# use model to fit fecundity estimates on to mackerel bio data
+pred_fecundity <- augment(glm_norm, type.predict = "response",  newdata = mackerel_bio)
+# for years prior to 1979, use model estimates, mean gonad mass
+mackerel_bio %>% group_by(age) %>% dplyr::summarise(mass_gonad = mean(mass_gonad,na.rm = T))
+df_new <- data.frame( age = seq(1,10,1),
+                      year = rep(seq(1968,1973,1),each = 10),
+                      mass_gonad = rep(c(NA, 45.44054,53.33952,66.80011,76.70724,85.59552,90.30791,94.90535,93.71853,108.48214)))
+	
+pred_fecundity2 <- augment(glm_norm, type.predict = "response",  newdata = df_new)
+
+# back transform and apply correction factor (i.e. half of sigma squared)
+pred_fecundity %<>% mutate(fecundity = exp(.fitted)*exp(sigma(glm_norm)^2)/2 )
+pred_fecundity2 %<>% mutate(fecundity = exp(.fitted)*exp(sigma(glm_norm)^2)/2 )
+
+# merge
+pred_fecundity<-bind_rows(pred_fecundity2,pred_fecundity)
+
+# model coeffs
+a<-tidy(glm_norm)
+a %<>% mutate(a = (exp(estimate)-1)*100) #  percent difference for one unit change
+(exp(coef(glm_norm)["mass_gonad"]) - 1) * 100 
+(exp(coef(glm_norm)["age"]) - 1) * 100
+
+#  plot to make sure not weird
+pred_fecundity %>% group_by(year, age) %>% dplyr::summarise(mean_fecundity = mean(fecundity,na.rm=T)) %>% ggplot(aes(year, mean_fecundity))+geom_point()+facet_wrap(vars(age))
+#
+pred_fecundity %>% mutate(age = as.factor(age), age = fct_relevel(age,"2","3","4","5","6","7","8","9","10")) %>%  ggplot(aes(year,fecundity,colour=factor(age),group=age))+stat_summary(fun.data="mean_cl_boot")+scale_colour_viridis_d()+theme_minimal(base_size = 16)+xlab("Year")+ylab("Fecundity")+labs(title = "Estimated mean fecundity")
+
+# get annual mean fecundity for age group
+pred_fecundity %<>% group_by(year, age) %>% 
+  dplyr::summarise(fecundity = mean(fecundity,na.rm = T))
+
+# # as a table
+# df <- data.frame(year = rep(seq(1979,2020,1),each=10),
+#                  age = seq(1,10,1))
+# 
+# pred_fecundity <- left_join(df,pred_fecundity)
+
+# wide
+pred_fecundity  %<>%  pivot_wider(names_from = age, values_from = fecundity)
+pred_fecundity %<>% mutate(`1` = as.numeric(NA))
+```
+
+# figure
+```{r}
+# figure 
+mackerel_bio %>% mutate(age = as.factor(age), age = fct_relevel(age,"1","2","3","4","5","6","7","8","9","10")) %>%  ggplot(aes(year,mass_gonad,colour=age))+stat_summary(fun.data = "mean_cl_boot",size = 1)+scale_colour_viridis_d()+ facet_wrap(vars(age))+theme_minimal(base_size = 16)+xlab("Year")+ylab("Gonad mass g")+theme(plot.margin = margin(0,0,0,0))
+
+pred_fecundity %>% pivot_longer(cols = 2:11,names_to = "age") %>% mutate(age = as.factor(age), age = fct_relevel(age,"1","2","3","4","5","6","7","8","9","10")) %>%  ggplot(aes(year,value,colour=factor(age),group=age))+geom_point(size = 2)+geom_line(alpha=0.7)+scale_colour_viridis_d()+theme_minimal(base_size = 16)+xlab("Year")+ylab("Fecundity")+labs(title = "Estimated mean fecundity")
+summary(pred_fecundity)
+```
+
+# predict missing values (NAs and pre 1979)
+```{r}
+# interpolate missing values from model coefficients or linear interpretation for age 5 since it has the fewest NAs
+library(zoo)
+
+# only need for years with survey i.e. 1979-2020??
+# pred_fecundity %<>% dplyr::filter(year>1978)
+pred_fecundity_original<-pred_fecundity
+# ages 2-10 linear, age 1 by coeffs
+pred_fecundity %<>% mutate(`2` = ifelse(is.na(`2`),na.approx(pred_fecundity$`2`),`2`)) 
+pred_fecundity %<>% mutate(`3` = ifelse(is.na(`3`),na.approx(pred_fecundity$`3`),`3`)) 
+pred_fecundity %<>% mutate(`4` = ifelse(is.na(`4`),na.approx(pred_fecundity$`4`),`4`)) 
+pred_fecundity %<>% mutate(`5` = ifelse(is.na(`5`),na.approx(pred_fecundity$`5`),`5`)) 
+pred_fecundity %<>% mutate(`6` = ifelse(is.na(`6`),na.approx(pred_fecundity$`6`),`6`)) 
+pred_fecundity %<>% mutate(`7` = ifelse(is.na(`7`),na.approx(pred_fecundity$`7`),`7`)) 
+pred_fecundity %<>% mutate(`8` = ifelse(is.na(`8`),na.approx(pred_fecundity$`8`),`8`)) 
+pred_fecundity %<>% mutate(`9` = ifelse(is.na(`9`),na.approx(pred_fecundity$`9`),`9`)) 
+pred_fecundity %<>% mutate(`10` = ifelse(is.na(`10`),na.approx(pred_fecundity$`10`),`10`)) 
+pred_fecundity %<>% mutate(`1` = ifelse(is.na(`1`), (1-0.0375)*`2`, `1`))
+# alternative way to fill in NAs is by model coefficients using the adjacent age
+# problem is some extreme values seem to generate unrealistic things... ie age 7 in 2015
+
+# pred_fecundity %<>% mutate(`4` = ifelse(is.na(`4`), (1-0.0375)*`5`, `4`))
+# pred_fecundity %<>% mutate(`3` = ifelse(is.na(`3`), (1-0.0375)*`4`, `3`))
+# pred_fecundity %<>% mutate(`2` = ifelse(is.na(`2`), (1-0.0375)*`3`, `2`))
+# pred_fecundity %<>% mutate(`1` = ifelse(is.na(`1`), (1-0.0375)*`2`, `1`))
+# 
+# pred_fecundity %<>% mutate(`6` = ifelse(is.na(`6`), (1.0375)*`5`, `6`))
+# pred_fecundity %<>% mutate(`7` = ifelse(is.na(`7`), (1.0375)*`6`, `7`))
+# pred_fecundity %<>% mutate(`8` = ifelse(is.na(`8`), (1.0375)*`7`, `8`))
+# pred_fecundity %<>% mutate(`9` = ifelse(is.na(`9`), (1.0375)*`8`, `9`))
+# pred_fecundity %<>% mutate(`10` = ifelse(is.na(`10`), (1.0375)*`9`, `10`))
+
+fec<-pred_fecundity
+```
+
+#
+```{r}
+
+```
+
+
+```{r}
+save(fec,file="C:/Users/SmithAND/Documents/My Stocks/Mackerel/mackerel_sar_2021/mackerel_model_2021/mackerel_assessment_input/Rdata/fec.Rdata")
+write.csv(fec,file="C:/Users/SmithAND/Documents/My Stocks/Mackerel/mackerel_sar_2021/mackerel_model_2021/mackerel_assessment_input/csv/fec.csv",row.names = F)
+
+```
+
+# figure
+```{r}
+fec %>% dplyr::filter(year<2020) %>%  pivot_longer(cols = 2:11,names_to = "age") %>% mutate(age = as.factor(age), age = fct_relevel(age,"1","2","3","4","5","6","7","8","9","10")) %>%  ggplot(aes(year,value,colour=factor(age),group=age))+geom_point(size = 2)+geom_line(alpha=0.7)+scale_colour_viridis_d()+theme_minimal(base_size = 16)+xlab("Year")+ylab("Fecundity")
+
+
+```
+
+
