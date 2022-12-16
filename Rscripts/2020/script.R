@@ -27,31 +27,31 @@ invisible(lapply(packages, function(x) {if (!require(x, character.only = T)) {in
 #################################################################################################################
 
 
-cn <- read.ices("data/2020/cn_2020.dat")
-ct <- read.ices("data/2020/ct_2020.dat")  
-ctUSA <- read.ices("data/2020/ctUSA_2020.dat") 
+cn <- read.ices("data/2020/cn.dat")
+ct <- read.ices("data/2020/ct.dat")  
+ctUSA <- read.ices("data/2020/ctUSA.dat") 
 # ctForeign <- read.ices("data/ctForeign.dat")
-cw <- read.ices("data/2020/cw_2020.dat")
-dw <- read.ices("data/2020/dw_2020.dat")
-lf <- read.ices("data/2020/lf_2020.dat")
-lw <- read.ices("data/2020/lw_2020.dat")
-mo <- read.ices("data/2020/mo_2020.dat") # 1968-2016 - Francois, Thomas, and EVB, 2018-2020 ADS
-mo_raw <- read.ices("data/2020/mo_2020_raw_emp.dat") # 1968-2016 - Francois, Thomas, and EVB, 2018-2020 ADS
-mo_mod <- read.ices("data/2020/mo_2020_mod.dat") # 1968-2016 - Francois, Thomas, and EVB, 2018-2020 ADS
+cw <- read.ices("data/2020/cw.dat")
+dw <- read.ices("data/2020/dw.dat")
+lf <- read.ices("data/2020/lf.dat")
+lw <- read.ices("data/2020/lw.dat")
+mo <- read.ices("data/2020/mo.dat") # 1968-2016 - Francois, Thomas, and EVB, 2018-2020 ADS
+mo_raw <- read.ices("data/2020/mo_raw_emp.dat") # 1968-2016 - Francois, Thomas, and EVB, 2018-2020 ADS
+mo_mod <- read.ices("data/2020/mo_mod.dat") # 1968-2016 - Francois, Thomas, and EVB, 2018-2020 ADS
 mo <- smoothmatrix(mo,subset=8:nrow(mo),max=1,plot=TRUE) # 99% smooth seems strong
-nm <- read.ices("data/2020/nm_2020.dat")
+nm <- read.ices("data/2020/nm.dat")
 nm[] <- 0.27
-pf <- read.ices("data/2020/pf_2020.dat")
-pm <- read.ices("data/2020/pm_2020.dat")
-sw <- read.ices("data/2020/sw_2020.dat")
-sw0 <- read.ices("data/2020/sw0_2020.dat")
-surveys <- read.ices("data/2020/survey_2020.dat")
+pf <- read.ices("data/2020/pf.dat")
+pm <- read.ices("data/2020/pm.dat")
+sw <- read.ices("data/2020/sw.dat")
+sw0 <- read.ices("data/2020/sw0.dat")
+surveys <- read.ices("data/2020/survey.dat")
 surveys[[1]] <- surveys[[1]][!is.na(surveys[[1]]),1,drop=FALSE]
 attr(surveys[[1]],'time') <- c(0.47)
-tep <- read.ices("data/2020/tep_2020.dat")
-tep_plus_30 <- read.ices("data/2020/tep_2020_+30perc.dat")
-tep_min_30 <- read.ices("data/2020/tep_2020_-30perc.dat")
-tep_na_fill <- read.ices("data/2020/tep_2020_fill_na.dat")
+tep <- read.ices("data/2020/tep.dat")
+tep_plus_30 <- read.ices("data/2020/tep_+30perc.dat")
+tep_min_30 <- read.ices("data/2020/tep_-30perc.dat")
+tep_na_fill <- read.ices("data/2020/tep_fill_na.dat")
 
 tep[[1]] <- tep[[1]][!is.na(tep[[1]]),1,drop=FALSE]
 tep[[1]][,1] <- tep[[1]][,1]*1000000000000
@@ -69,9 +69,9 @@ tep_na_fill[[1]] <- tep_na_fill[[1]][!is.na(tep_na_fill[[1]]),1,drop=FALSE]
 tep_na_fill[[1]][,1] <- tep_na_fill[[1]][,1]*1000000000000
 attr(tep_na_fill[[1]],'time') <- c(0.47)
 
-pfem <- read.ices("data/2020/propFemale_2020.dat")
-fec <- read.ices("data/2020/fec_2020.dat") 
-fec_old <- read.ices("data/2020/fec_2020_old.dat") 
+pfem <- read.ices("data/2020/propFemale.dat")
+fec <- read.ices("data/2020/fec.dat") 
+fec_old <- read.ices("data/2020/fec_old.dat") 
 fec_smooth <- smoothmatrix(fec,subset=8:nrow(fec),max=8e+5,plot=TRUE) # subset is for the first 7 years where we just used the mean so no need to smooth
 
 # define catch limits

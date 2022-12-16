@@ -18,10 +18,10 @@ year <- 2022
 ########### fit model ###########################################################################################
 #################################################################################################################
 
-fit <- ccam.fit(dat,conf,par,debug=T)           
-fit
+fitn <- ccam.fit(dat,conf,par,debug=T)           
+fitnocaa <- fitn
 
-save(fit, file=paste0('Rdata/',year,'/fit.Rdata'))
+save(fitnocaa, file=paste0('Rdata/',year,'/fitnocaa.Rdata'))
 load(paste0('Rdata/',year,'/fit.Rdata'))
 
 # plots

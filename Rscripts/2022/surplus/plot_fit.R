@@ -12,7 +12,7 @@ res <- TRUE
 procres <- TRUE
 
 .wd <- paste0('img/',year,'/fit/',name)
-dir.create(.wd, showWarnings = FALSE)
+dir.create(.wd, showWarnings = FALSE,recursive = T)
 
 
 ### reference points
@@ -29,6 +29,7 @@ saveplot(recplot(x,trans=function(x)x),name='rec_log',dim=c(10,6),wd=.wd,type=ty
 saveplot(catchplot(x,fleet = 1,ci=FALSE)+scale_y_continuous(limits=c(0,100000),expand = c(0,0)),name='catch',dim=c(10,6),wd=.wd,type=type)
 
 saveplot(ssbplot(x)+scale_y_continuous(limits=c(0,10e5),expand = c(0,0)),name='ssb',dim=c(10,6),wd=.wd,type=type)
+saveplot(ssb0plot(x)+scale_y_continuous(limits=c(0,10e5),expand = c(0,0)),name='ssb0',dim=c(10,6),wd=.wd,type=type)
 saveplot(fbarplot(x)+scale_y_continuous(limits=c(0,4),expand = c(0,0)),name='F',dim=c(10,6),wd=.wd,type=type)
 saveplot(plot(refBase),name='rp',dim=c(14,14),wd=.wd,type=type)
 saveplot(selplot(x),name='sel',dim=c(6,6),wd=.wd,type=type)

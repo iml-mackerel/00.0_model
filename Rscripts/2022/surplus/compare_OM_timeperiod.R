@@ -12,27 +12,24 @@ year <- 2022
 
 load(file=paste0("Rdata/",year,"/fit.Rdata"))
 
-test <- runwithout(fit,year=1968,conf=fit$conf)
-data <- reduce(fit$data, year = 1968,conf=fit$conf)
+# without the first i years
+for(i in 0:7){
+    y <- 1968+i
+    fit.period <- runwithout(fit,year=1968:y) 
+    save(fit.period, file=paste0('Rdata/',year,'/fit_compare/fit.period.start',y+1,'.Rdata'))
+}
+save(fit, file=paste0('Rdata/',year,'/fit_compare/fit.period.start1968.Rdata'))
 
-# runwithout
-data <- reduce(fit$data, year = year, fleet = 1:3, conf = fit$conf)
-conf <- attr(data, "conf")
-attr(data, "conf") <- NULL
-par <- defpar(data, conf)
-ret <- ccam.fit(data, conf, par, rm.unidentified = TRUE)
+f <- list.files(paste0('Rdata/',year,'/fit_compare/'),'fit.period.start',full.names = T)
+startruns <- lapply(f, function(x) {print(x);get(load(x))})
 
-return(ret)
-
-
-recplot(c(fit,ret))
+names(startruns) <- sapply(regmatches(f, regexec("period.\\s*(.*?)\\s*.Rdata", f)),'[[',2)
+class(startruns) <- 'ccamset'
 
 .wd <- paste0('img/',year,'/fit_compare/timeperiod/')
-dir.create(.wd, showWarnings = FALSE,recursive = TRUE)
-
-savepng(ssbplot(c(fit,ret)),.wd,"SSB",c(21,13))
-savepng(recplot(c(fit,ret)),.wd,"rec",c(21,13))
-
+savepng(ssbplot(startruns,ci=FALSE),.wd,"SSB",c(21,13))
+savepng(recplot(startruns,ci=FALSE),.wd,"rec",c(21,13))
+savepng(parplot(startruns),.wd,"par",c(21,13))
 
 
 

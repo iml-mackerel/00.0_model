@@ -7,6 +7,7 @@
 dir <- paste0('data/',year,'/')
 
 cn <- read.ices(paste0(dir,'cn.dat'))
+# cn <- cn[-nrow(cn),] # remoe last year data
 ct <- read.ices(paste0(dir,'ct.dat'))
 ctUSA <- read.ices(paste0(dir,'ctUSA.dat'))
 ctForeign <- read.ices(paste0(dir,'ctForeign.dat'))
@@ -33,12 +34,11 @@ fec <- read.ices(paste0(dir,'fec.dat'))
 
 # redefine catch limits (add 25-50% US catch)
 ctwusa <- ct
-ctwusa[,1] <- ct[,1]*1.10 + ctUSA[-c(1:8),1]*0.25
-ctwusa[,2] <- ct[,2] + ctUSA[-c(1:8),1]*0.50
-
+ctwusa[,1] <- ct[,1]*1.10 + ctUSA[,1]*0.25
+ctwusa[,2] <- ct[,2] + ctUSA[,1]*0.50
 
 dat <- setup.ccam.data(surveys=survey,
-                       residual.fleet=cn,
+                       residual.fleet=cn[-nrow(cn),],
                        total.catch=ctwusa,
                        prop.mature=mo,
                        stock.mean.weight=sw,
@@ -52,7 +52,7 @@ dat <- setup.ccam.data(surveys=survey,
                        land.frac=lf,
                        prop.fem=pfem,
                        fec=fec)
-dat$aux[,1] <- dat$aux[,1]+1967 # oddity in setup.ccam.data (lazy solution)
+#dat$aux[,1] <- dat$aux[,1]+1967 # oddity in setup.ccam.data (lazy solution)
 
 conf <- defcon(dat)
 conf$keySel <- matrix(c(0,1,2,3,4,4,4,4,4,4), nrow=nrow(conf$keySel), ncol=ncol(conf$keySel),byrow = T)

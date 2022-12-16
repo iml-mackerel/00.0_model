@@ -1,4 +1,4 @@
-res <- data.frame(ssb=ssbtable(fit)[,1],
+res <- data.frame(ssb=ssb0table(fit)[,1],
                   rec=rectable(fit)[,1],
                   f=fbartable(fit)[,1],
                   catch=catchtable(fit)[,1],
