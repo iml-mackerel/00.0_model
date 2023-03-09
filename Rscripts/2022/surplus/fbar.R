@@ -17,3 +17,12 @@ f1.10 <- tail(fweighted(fay,nay,1:10),1)
 exp5.10 <- 1-exp(-f5.10)  # same as unweighted fbar because constant
 exp3.10 <- 1-exp(-f3.10)
 exp1.10 <- 1-exp(-f3.10)
+
+tail(summary(fit),2)
+1-exp(-0.422)
+
+exp5.10 
+exp3.10
+exp1.10
+
+rowMeans(fay) # average 1-10, unweighted

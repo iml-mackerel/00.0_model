@@ -14,22 +14,18 @@ procres <- TRUE
 .wd <- paste0('img/',year,'/fit/',name)
 dir.create(.wd, showWarnings = FALSE,recursive = T)
 
-
 ### reference points
-refBase <- ypr(x,rec.years=1969:2016)
-yr <- range(x$data$year)
-yr[1] <- yr[1]+1
+refBase <- ypr(x)
 
 ### plots
 update_geom_defaults("line", list(size = 0.6))
 saveplot(srplot(x,curve=TRUE),name='sr',dim=c(16,10),wd=.wd,type=type) 
 saveplot(recplot(x),name='rec',dim=c(10,6),wd=.wd,type=type) 
-saveplot(recplot(x,years=yr[1]:yr[2]),name='rec_1969',dim=c(10,6),wd=.wd,type=type) 
 saveplot(recplot(x,trans=function(x)x),name='rec_log',dim=c(10,6),wd=.wd,type=type) 
-saveplot(catchplot(x,fleet = 1,ci=FALSE)+scale_y_continuous(limits=c(0,100000),expand = c(0,0)),name='catch',dim=c(10,6),wd=.wd,type=type)
+saveplot(catchplot(x,fleet = 1,ci=FALSE)+scale_y_continuous(limits=c(0,max(exp(x$data$logobs[,2]),na.rm=T)*1.1),expand = c(0,0)),name='catch',dim=c(10,6),wd=.wd,type=type)
 
-saveplot(ssbplot(x)+scale_y_continuous(limits=c(0,10e5),expand = c(0,0)),name='ssb',dim=c(10,6),wd=.wd,type=type)
-saveplot(ssb0plot(x)+scale_y_continuous(limits=c(0,10e5),expand = c(0,0)),name='ssb0',dim=c(10,6),wd=.wd,type=type)
+saveplot(ssbplot(x)+scale_y_continuous(limits=c(0,max(ssbtable(x)[,3])*1.1),expand = c(0,0)),name='ssb',dim=c(10,6),wd=.wd,type=type)
+saveplot(ssb0plot(x)+scale_y_continuous(limits=c(0,max(ssb0table(x)[,3])*1.1),expand = c(0,0)),name='ssb0',dim=c(10,6),wd=.wd,type=type)
 saveplot(fbarplot(x)+scale_y_continuous(limits=c(0,4),expand = c(0,0)),name='F',dim=c(10,6),wd=.wd,type=type)
 saveplot(plot(refBase),name='rp',dim=c(14,14),wd=.wd,type=type)
 saveplot(selplot(x),name='sel',dim=c(6,6),wd=.wd,type=type)
@@ -49,20 +45,26 @@ p1 <- srplot(x,curve=T)+
     geom_vline(xintercept=refBase$f40ssb*0.8,linetype='dotted',col='green')
 saveplot(p1,name='sr_rp',dim=c(16,10),wd=.wd,type=type) 
 
+p1b <- srplot(x,curve=T)+
+    geom_vline(xintercept=refBase$f40ssb,linetype='dashed')+
+    geom_vline(xintercept=refBase$f40ssb*0.4,linetype='dashed',col='darkred')+
+    geom_vline(xintercept=refBase$f40ssb*0.8,linetype='dashed',col='darkgreen')
+saveplot(p1b,name='sr_rpf40',dim=c(16,10),wd=.wd,type=type) 
 
-p2 <- ssbplot(x,linesize=1)+scale_y_continuous(limits=c(0,8e5),expand = c(0,0))+geom_hline(yintercept = refBase$f40ssb)+
+p2 <- ssbplot(x)+scale_y_continuous(limits=c(0,max(ssbtable(x)[,3])*1.1),expand = c(0,0))+
+    geom_hline(yintercept = refBase$f40ssb)+
     geom_hline(yintercept = refBase$f40ssb*0.8,col='darkgreen')+
     geom_hline(yintercept = refBase$f40ssb*0.4,col='darkred')
     
 saveplot(p2,name='ssb_rpF40',dim=c(10,6),wd=.wd,type=type)
 
-p3 <- ssbplot(x,years=2000:2018,linesize=1)+scale_y_continuous(limits=c(0,4e5),expand = c(0,0))+geom_hline(yintercept = refBase$f40ssb)+
+p3 <- ssbplot(x,years=2000:2022)+scale_y_continuous(limits=c(0,max(tail(ssbtable(x)[,3],23))*1.1),expand = c(0,0))+geom_hline(yintercept = refBase$f40ssb)+
     geom_hline(yintercept = refBase$f40ssb*0.8,col='darkgreen')+
     geom_hline(yintercept = refBase$f40ssb*0.4,col='darkred')
 
 saveplot(p3,name='ssb_rpF40end',dim=c(6,6),wd=.wd,type=type)
 
-p4 <- ssbplot(x,linesize=1)+scale_y_continuous(limits=c(0,10e5),expand = c(0,0))+
+p4 <- ssbplot(x)+scale_y_continuous(limits=c(0,max(ssbtable(x)[,3])*1.1),expand = c(0,0))+
     geom_hline(yintercept = refBase$ssbmsy)+
     geom_hline(yintercept = refBase$ssbmsy*0.8,col='darkgreen')+
     geom_hline(yintercept = refBase$ssbmsy*0.4,col='darkred')    
@@ -70,7 +72,7 @@ p4 <- ssbplot(x,linesize=1)+scale_y_continuous(limits=c(0,10e5),expand = c(0,0))
 saveplot(p4,name='ssb_rpmsy',dim=c(10,6),wd=.wd,type=type)
 
 
-p5 <- ssbplot(x,years=2000:2018,linesize=1)+scale_y_continuous(limits=c(0,4e5),expand = c(0,0))+
+p5 <- ssbplot(x,years=2000:2022)+scale_y_continuous(limits=c(0,max(tail(ssbtable(x)[,3],23))*1.1),expand = c(0,0))+
     geom_hline(yintercept = refBase$ssbmsy)+
     geom_hline(yintercept = refBase$ssbmsy*0.8,col='darkgreen')+
     geom_hline(yintercept = refBase$ssbmsy*0.4,col='darkred')    
@@ -81,15 +83,15 @@ p6 <- ggplot(melt(ntable(fit)),aes(x=Var1,y=Var2))+geom_point(alpha=0.8,aes(size
     scale_size(range = c(1,8)) +
     labs(size="N",y='Age',x='Year')+
     scale_color_viridis()+
-    guides(col=FALSE)
+    guides(col='none')
 saveplot(p6,name='n',dim=c(16,10),wd=.wd,type=type)
 
 pa <- p2+geom_text(aes(x=-Inf,y=Inf,label='A)'),hjust=-0.5,vjust=2)
 pb <- p6+theme(legend.position = 'none')+geom_text(aes(x=-Inf,y=Inf,label='B)'),hjust=-0.5,vjust=2)
-pc <- recplot(x,years=yr[1]:yr[2])+geom_text(aes(x=-Inf,y=Inf,label='C)'),hjust=-0.5,vjust=2)
-pd <- srplot(x,curve=T)+labs(y='')+geom_text(aes(x=-Inf,y=Inf,label='D)'),hjust=-0.5,vjust=2)
-pe <- fbarplot(x)+scale_y_continuous(limits=c(0,3.2),expand = c(0,0))+ geom_hline(yintercept = refBase$f40)+geom_text(aes(x=-Inf,y=Inf,label='E)'),hjust=-0.5,vjust=2)
-pf <- catchplot(x,fleet = 1,ci=FALSE)+scale_y_continuous(limits=c(0,100000),expand = c(0,0))+ylab('')+geom_text(aes(x=-Inf,y=Inf,label='F)'),hjust=-0.5,vjust=2)
+pc <- recplot(x)+geom_text(aes(x=-Inf,y=Inf,label='C)'),hjust=-0.5,vjust=2)
+pd <- srplot(x,curve=T,text=FALSE,linecol='darkred')+labs(y='')+geom_text(aes(x=-Inf,y=Inf,label='D)'),hjust=-0.5,vjust=2)
+pe <- fbarplot(x)+scale_y_continuous(limits=c(0,4),expand = c(0,0))+geom_hline(yintercept = refBase$f40)+geom_text(aes(x=-Inf,y=Inf,label='E)'),hjust=-0.5,vjust=2)
+pf <- catchplot(x,fleet = 1,ci=FALSE)+scale_y_continuous(limits=c(0,150000),expand = c(0,0))+ylab('')+geom_text(aes(x=-Inf,y=Inf,label='F)'),hjust=-0.5,vjust=2)
 saveplot(grid::grid.draw(rbind(
     cbind(ggplotGrob(pa), ggplotGrob(pb), size="first"),
     cbind(ggplotGrob(pc), ggplotGrob(pd), size="first"),
@@ -98,15 +100,16 @@ saveplot(grid::grid.draw(rbind(
 
 
 if(retro){
-    r <-retro(x,year=7,parallell=FALSE,silent=TRUE)  #maybe make plot with relative change
+    r <-retro(x,year=7,parallell=FALSE)  #maybe make plot with relative change
     save(r, file=paste0('Rdata/',year,'/retro/',name,'_retro.Rdata'))
     saveplot(plot(r,ci=FALSE),name="retro",dim=c(16,16),wd=.wd,type=type)
     saveplot(plot(r,ci=TRUE),name="retro_ci",dim=c(16,16),wd=.wd,type=type)
+    saveplot(plot(r,ci=TRUE,year=2010:2022)+scale_x_continuous(breaks=2010:2022),name="retro_ci_zoom",dim=c(16,16),wd=.wd,type=type)
     m <- round(mohn(r),2)
     write.table(m,paste0(.wd,"/mohn.txt"))
-    df <- data.frame(peel=1:7,LRP=unlist(lapply(lapply(r,ypr),'[','f40ssb'))*0.4)
-    rLRP <- ggplot(df,aes(x=peel,y=LRP))+geom_line()
-    saveplot(rLRP,name='retro_LRP',dim=c(8,6),wd=.wd,type=type)
+    #df <- data.frame(peel=1:7,LRP=unlist(lapply(lapply(r,ypr),'[','f40ssb'))*0.4)
+    #rLRP <- ggplot(df,aes(x=peel,y=LRP))+geom_line()
+    #saveplot(rLRP,name='retro_LRP',dim=c(8,6),wd=.wd,type=type)
 }
 
 if(res){
@@ -119,7 +122,7 @@ if(res){
 
 if(procres){
     myprocres <- procres(x)
-    saveplot(plot(myprocres,qq=FALSE),name="pe",dim=c(20,10),wd=.wd,type=type)
+    saveplot(plot(myprocres,qq=FALSE)+scale_y_continuous(breaks=1:10),name="pe",dim=c(20,10),wd=.wd,type=type)
 }
 
 

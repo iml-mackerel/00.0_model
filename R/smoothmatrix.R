@@ -26,7 +26,8 @@ smoothmatrix <- function(x,subset=NULL,smooth=0.99,byrow=TRUE,max=NULL,plot=FALS
             xv=xv[subset]
         }
         
-        smoothingSpline = smooth.spline(xv, y, spar=smooth)
+        id <- !is.na(y)
+        smoothingSpline <- smooth.spline(xv[id], y[id], spar=smooth)
         smo <- predict(smoothingSpline,x = 1:n)$y
         if(!is.null(max)) smo[smo>max] <- max
         if(plot) lines(smo)

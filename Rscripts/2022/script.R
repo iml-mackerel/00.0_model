@@ -8,6 +8,10 @@
 #################################################################################################################
 year <- 2022
 
+source("C:/Users/VANBE/Desktop/post-doc/DATA/CCAM/R/reading.R")
+source("C:/Users/VANBE/Desktop/post-doc/DATA/CCAM/R/plot.R")
+source("C:/Users/VANBE/Desktop/post-doc/DATA/CCAM/R/tables.R")
+source("C:/Users/VANBE/Desktop/post-doc/DATA/CCAM/R/retro.R")
 # data / configuration / parameter initialisation
 # source(paste0('Rscripts/',year,'/surplus/read_data.R'))
 
@@ -18,10 +22,10 @@ year <- 2022
 ########### fit model ###########################################################################################
 #################################################################################################################
 
-fitn <- ccam.fit(dat,conf,par,debug=T)           
-fitnocaa <- fitn
+fit <- ccam.fit(dat,conf,par,debug=T)           
+fit
 
-save(fitnocaa, file=paste0('Rdata/',year,'/fitnocaa.Rdata'))
+save(fit, file=paste0('Rdata/',year,'/fit.Rdata'))
 load(paste0('Rdata/',year,'/fit.Rdata'))
 
 # plots
@@ -30,6 +34,5 @@ load(paste0('Rdata/',year,'/fit.Rdata'))
 # source(paste0('Rscripts/',year,'/surplus/plot_fit.R'))
 
 # source(paste0('Rscripts/',year,'/surplus/save_csv.R'))
-
 
 
