@@ -5,8 +5,8 @@
 #################################################################################################################
 library(zoo)
 
-x <- get(load(file='Rdata/fit/fit.Rdata'))
-ct <- read.ices('data/2018/ct.dat')
+x <- get(load(file='Rdata/2022/fit.Rdata'))
+ct <- read.ices('data/2022/ct.dat')
 
 
 catch <- catchtable(x)

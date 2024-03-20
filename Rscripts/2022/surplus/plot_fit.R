@@ -86,25 +86,35 @@ p6 <- ggplot(melt(ntable(fit)),aes(x=Var1,y=Var2))+geom_point(alpha=0.8,aes(size
     guides(col='none')
 saveplot(p6,name='n',dim=c(16,10),wd=.wd,type=type)
 
-pa <- p2+geom_text(aes(x=-Inf,y=Inf,label='A)'),hjust=-0.5,vjust=2)
-pb <- p6+theme(legend.position = 'none')+geom_text(aes(x=-Inf,y=Inf,label='B)'),hjust=-0.5,vjust=2)
-pc <- recplot(x)+geom_text(aes(x=-Inf,y=Inf,label='C)'),hjust=-0.5,vjust=2)
-pd <- srplot(x,curve=T,text=FALSE,linecol='darkred')+labs(y='')+geom_text(aes(x=-Inf,y=Inf,label='D)'),hjust=-0.5,vjust=2)
-pe <- fbarplot(x)+scale_y_continuous(limits=c(0,4),expand = c(0,0))+geom_hline(yintercept = refBase$f40)+geom_text(aes(x=-Inf,y=Inf,label='E)'),hjust=-0.5,vjust=2)
-pf <- catchplot(x,fleet = 1,ci=FALSE)+scale_y_continuous(limits=c(0,150000),expand = c(0,0))+ylab('')+geom_text(aes(x=-Inf,y=Inf,label='F)'),hjust=-0.5,vjust=2)
+ 
+pa <- p2+geom_text(aes(x=-Inf,y=Inf,label='A)'),hjust=-0.5,vjust=2)+labs(y="SSB (t)\n")
+pb <- p6+theme(legend.position = 'none')+geom_text(aes(x=-Inf,y=Inf,label='B)'),hjust=-0.5,vjust=2)+scale_y_continuous(breaks = 1:10)+labs(y="Age\n")
+pc <- recplot(x)+geom_text(aes(x=-Inf,y=Inf,label='C)'),hjust=-0.5,vjust=2)+
+    scale_y_continuous(labels = function(x) format(x, scientific = TRUE),expand=c(0,0),limits=c(0,max(rectable(x)[,3])*1.02))+labs(y="Recruitment (numbers)\n")
+pd <- srplot(x,curve=T,text=FALSE,linecol='darkred')+labs(y='Recruitment')+geom_text(aes(x=-Inf,y=Inf,label='D)'),hjust=-0.5,vjust=2)+
+    scale_y_continuous(labels = function(x) format(x, scientific = TRUE),
+                       breaks=as.numeric(na.omit(layer_scales(pc)$y$break_positions())),
+                       limits=c(0,max(rectable(x)[,1])*1.05),expand=c(0,0))+
+    labs(y="Recruitment (numbers)\n")
+pe <- fbarplot(x)+scale_y_continuous(limits=c(0,4),expand = c(0,0))+geom_hline(yintercept = refBase$f40)+geom_text(aes(x=-Inf,y=Inf,label='E)'),hjust=-0.5,vjust=2)+
+    labs(y="Fbar\n")
+pf <- catchplot(x,fleet = 1,ci=FALSE)+scale_y_continuous(limits=c(0,150000),expand = c(0,0))+ylab('Catch')+geom_text(aes(x=-Inf,y=Inf,label='F)'),hjust=-0.5,vjust=2)+
+    labs(y="Landings (t)\n")
 saveplot(grid::grid.draw(rbind(
     cbind(ggplotGrob(pa), ggplotGrob(pb), size="first"),
     cbind(ggplotGrob(pc), ggplotGrob(pd), size="first"),
     cbind(ggplotGrob(pe), ggplotGrob(pf), size="first"),
-    size='first')),name='RESDOC',dim=c(22,22),wd=.wd,type=type)
+    size='first')),name='RESDOC2',dim=c(22,22),wd=.wd,type=type)
 
 
 if(retro){
     r <-retro(x,year=7,parallell=FALSE)  #maybe make plot with relative change
     save(r, file=paste0('Rdata/',year,'/retro/',name,'_retro.Rdata'))
     saveplot(plot(r,ci=FALSE),name="retro",dim=c(16,16),wd=.wd,type=type)
+    saveplot(plot(r,ci=FALSE),name="FR/retro",dim=c(16,16),wd=.wd,type='pdf')
     saveplot(plot(r,ci=TRUE),name="retro_ci",dim=c(16,16),wd=.wd,type=type)
     saveplot(plot(r,ci=TRUE,year=2010:2022)+scale_x_continuous(breaks=2010:2022),name="retro_ci_zoom",dim=c(16,16),wd=.wd,type=type)
+    saveplot(plot(r,ci=TRUE,year=2010:2022)+scale_x_continuous(breaks=2010:2022),name="FR/retro_ci_zoom",dim=c(16,16),wd=.wd,type='pdf')
     m <- round(mohn(r),2)
     write.table(m,paste0(.wd,"/mohn.txt"))
     #df <- data.frame(peel=1:7,LRP=unlist(lapply(lapply(r,ypr),'[','f40ssb'))*0.4)
@@ -153,3 +163,16 @@ saveplot(grid.arrange(
         resplot(x,fleets = 2,type=3)+nol,ncol=1),
     ncol=2),
     name="/res_all",dim=c(18,16),wd=.wd,type=type)
+
+saveplot(grid.arrange(
+    arrangeGrob(
+        resplot(x,fleets = 3,type=1)+ggtitle('Index')+labs(y="Résidus",x='Année'),
+        resplot(x,fleets = 3,type=2)+labs(y="Résidus",x="Prédictions"),
+        resplot(x,fleets = 3,type=3)+labs(y="Prédictions",x='Observations'),ncol=1),
+    arrangeGrob(
+        resplot(x,fleets = 2,type=6)+ggtitle('CAA')+labs(y="Résidus",x='Année'),
+        resplot(x,fleets = 2,type=2)+nol+labs(y="Résidus",x="Prédictions"),
+        resplot(x,fleets = 2,type=3)+nol+labs(y="Prédictions",x='Observations'),ncol=1),
+    ncol=2),
+    name="FR/res_all",dim=c(18,16),wd=.wd,type=type)
+

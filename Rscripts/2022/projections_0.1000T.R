@@ -62,7 +62,7 @@ tests <- forecast(fit=fit,
 
 # --------------------- base MPs ----------------------------------------------
 # under what harvest control rule/TAC to forecast?
-nMP=9
+nMP=28
 
 MP1 <- list(MPlabel='MP1',
             IE=NULL,
@@ -73,14 +73,33 @@ copy(x=MP1,n=nMP,name=c('MP'))
 
 avail('MP')
 MP1$catchval <- rep(0,ny)
-MP2$catchval <- rep(1000,ny)
-MP3$catchval <- rep(2000,ny)
-MP4$catchval <- rep(3000,ny)
-MP5$catchval <- rep(4000,ny)
-MP6$catchval <- rep(5000,ny)
-MP7$catchval <- rep(6000,ny)
-MP8$catchval <- rep(7000,ny)
-MP9$catchval <- rep(8000,ny)
+MP2$catchval <- rep(50,ny)
+MP3$catchval <- rep(100,ny)
+MP4$catchval <- rep(150,ny)
+MP5$catchval <- rep(200,ny)
+MP6$catchval <- rep(250,ny)
+MP7$catchval <- rep(300,ny)
+MP8$catchval <- rep(350,ny)
+MP9$catchval <- rep(450,ny)
+MP10$catchval <- rep(500,ny)
+MP11$catchval <- rep(550,ny)
+MP12$catchval <- rep(600,ny)
+MP13$catchval <- rep(650,ny)
+MP14$catchval <- rep(700,ny)
+MP15$catchval <- rep(750,ny)
+MP16$catchval <- rep(800,ny)
+MP17$catchval <- rep(850,ny)
+MP18$catchval <- rep(900,ny)
+MP19$catchval <- rep(950,ny)
+MP20$catchval <- rep(1000,ny)
+MP21$catchval <- rep(460,ny)
+MP22$catchval <- rep(470,ny)
+MP23$catchval <- rep(480,ny)
+MP24$catchval <- rep(490,ny)
+MP25$catchval <- rep(860,ny)
+MP26$catchval <- rep(870,ny)
+MP27$catchval <- rep(880,ny)
+MP28$catchval <- rep(890,ny)
 
 #******************************************************************************
 #************* Create all forecasting scenarios *******************************
@@ -142,7 +161,9 @@ Date = Sys.Date()
 DateDir = paste0("Rdata/2022/proj/",Date,"/")
 dir.create(DateDir,showWarnings = FALSE,recursive = T)
 
-multi.forecast(scen.list,DateDir,parallel=FALSE,ncores=7)
+
+
+multi.forecast(scen.list[49:56],DateDir,parallel=FALSE,ncores=7)
 
 ### plots ---------------------------
     filenames <- dir(DateDir, pattern = "")
@@ -188,8 +209,6 @@ ies <- do.call('rbind',ies)
 pIEbox <- ggplot(ies,aes(x=factor(Year),y=value))+geom_boxplot()+
     facet_wrap(~name,ncol=1,scale='free_y')+labs(y='Catch (t)',x='Year')
 saveplot(pIEbox,name="IEbox",dim=c(6,8),wd='img/2022/proj')
-pIEbox <- pIEbox+labs(y='Captures (t)',x='Année')
-saveplot(pIEbox,name="IEbox_FR",dim=c(6,8),wd='img/2022/proj')
 
 
 ### output table
@@ -218,7 +237,7 @@ projres$ssblrp2025 <- round(diamondplot(runlist,what='ssb',year=2025,ratio = TRU
 projres$rec <- c('BH','MEAN')[ldply(scen.list,function(x)x$rec.meth)[,2]]
 
 grow <- ldply(runlist,probgrowth)
-grow$MP <- c(1:nMP,1:nMP)
+grow$MP <- as.numeric(sub(".*MP","",grow$.id))
 grow$rec <- rep(c("BH","MEAN"),each=nMP)
 names(grow)[1:2] <- c('file','grow')
 projres <- merge(projres,grow)
@@ -234,7 +253,7 @@ projres2 <- ddply(projres,c('MP'),summarise,
                   grow=paste0(round(mean(grow),2)," % (",paste(grow,collapse = "-"),"%)"))
 
 projres2 <- merge(projres2,unique(projres[,c(1,3:9)]))
-write.csv(projres2, file = "csv/2022/proj_mean.csv",row.names = FALSE)
+write.csv(projres2, file = "csv/2022/proj_mean_01000b.csv",row.names = FALSE)
 
 # figs
 

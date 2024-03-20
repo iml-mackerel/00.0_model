@@ -27,3 +27,19 @@ write.csv(expl,paste0("csv/",year,"/expl.csv"))
 pars <- partable(fit)
 pars <- round(pars,2)
 write.csv(pars,paste0("csv/",year,"/par.csv"))
+
+ssb <- ssbtable(fit)
+ssb <- round(ssb,0)
+write.csv(ssb,paste0("csv/",year,"/ssb.csv"),row.names = F)
+
+ssb0 <- ssb0table(fit)
+ssb0 <- round(ssb0,0)
+write.csv(ssb0,paste0("csv/",year,"/ssb0.csv"),row.names = F)
+
+rec <- rectable(fit)
+rec <- round(rec,0)
+write.csv(rec,paste0("csv/",year,"/rec.csv"),row.names = F)
+
+tsb <- tsbtable(fit)
+tsb <- round(tsb,0)
+write.csv(tsb,paste0("csv/",year,"/tsb.csv"),row.names = F)

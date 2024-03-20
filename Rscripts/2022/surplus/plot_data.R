@@ -66,6 +66,15 @@ p11b <- ggplot(d,aes(x=Year,y=TEP))+
 
 saveplot(p11b,name='survey_mismatch',dim=c(15,8),wd=wd,type=type) 
 
+d <- data.frame(Year=as.numeric(rownames(survey[[1]])),TEP=survey[[1]][,1])
+d <- merge(data.frame(Year=min(d$Year):max(d$Year)),d,all.x = T)
+p11c <- ggplot(d, aes(x = Year, y = TEP))+ 
+    geom_line()+
+    geom_point(col = "grey30")+
+    ylab('TEP (billions)')+
+    scale_y_continuous(limits=c(0,max(survey[[1]][,1])*1.1),expand = c(0,0))
+saveplot(p11c,name='survey_discline',dim=c(15,8),wd=wd,type=type) 
+    
 ## total catch
 p12 <- prettymatplot(ct,ylab='Catch (t)', xlab='Year',col=c('black','darkgrey'))
 saveplot(p12,name='ct',dim=c(15,8),wd=wd,type=type) 

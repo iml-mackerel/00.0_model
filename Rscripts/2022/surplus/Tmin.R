@@ -162,6 +162,10 @@ saveplot(tmin.ssb,name="ssb",dim=c(17,10),wd='img/2022/Tmin')
 cz <- foreplot(runlist,what.y='probCZ',rect=0.75,ylab='Probability out of the CZ',legendnames = names(runlist))+scale_x_continuous(breaks=2022:2033)
 saveplot(cz,name="cz",dim=c(17,10),wd='img/2022/Tmin')
 
+cz <- foreplot(runlist,what.y='probCZ',rect=0.75,ylab='Probabilité de sortir de la ZC',xlab='Année',legendnames = names(runlist))+scale_x_continuous(breaks=2022:2033)
+saveplot(cz,name="cz",dim=c(17,10),wd='img/2022/Tmin_FR')
+
+
 df <- foreplot(runlist,what.y='probCZ',data=TRUE)
 rebuildf<- ddply(df[df$y<0.75,],c('id','OM','MP','IE'),summarise,ny=length(y))
 rebuildf<- ddply(rebuildf,c('IE'),function(x){paste0(x[x$OM=='OMbase','ny'],' [',paste(range(x[,'ny']),collapse='-'),']')})
@@ -169,7 +173,7 @@ rebuildf[,1] <- c("F = 0","TACcan=0, TACus=3639t")
 
 df$OM <- gsub("wUS","",df$OM)
 df[df$OM=="OMcore1",'OM'] <- "OM.recMean"
-df[df$OM=="OMcore2",'OM'] <- "M0.25"
+df[df$OM=="OMcore2",'OM'] <- "OM0.25"
 df[df$OM=="OMcore3",'OM'] <- "OM.US25-50"
 df[df$OM=="OMcore4",'OM'] <- "OM.US50-75"
 df$OM <- factor(df$OM,levels=c("OMbase","OM.recMean","M0.25","OM.US25-50","OM.US50-75"))
