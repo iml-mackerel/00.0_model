@@ -43,3 +43,7 @@ write.csv(rec,paste0("csv/",year,"/rec.csv"),row.names = F)
 tsb <- tsbtable(fit)
 tsb <- round(tsb,0)
 write.csv(tsb,paste0("csv/",year,"/tsb.csv"),row.names = F)
+
+bounds <- data.frame(cbind(fit$data$aux,exp(fit$data$logobs)))
+bounds <- bounds[bounds$fleet==1,-3]
+write.csv(bounds,paste0("csv/",year,"/catchbounds.csv"),row.names = F)
