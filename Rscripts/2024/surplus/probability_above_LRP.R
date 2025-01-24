@@ -83,12 +83,10 @@ probLRP75<- probLRP %>% # lower.tail or 1-pnorm
     
 problrp<- data.frame(ratio=probLRP75$ratio)
 
-
 write.csv(problrp, paste0("csv/", year, "/problrp.csv"), row.names=F)
 
 #highlight last 2 years
 ssb<- ssb %>% as.matrix() %>% as.data.frame() %>%  mutate(catyear= if_else(year %in% c((my.year-1) : my.year), "1", "0"))
-
 
 p2 <- ggplot()+
     geom_rect(aes(xmin=0,xmax=LRP/1000,ymin=0,ymax=Inf),fill='darkred',alpha=0.2)+
