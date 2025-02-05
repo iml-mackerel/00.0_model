@@ -1,7 +1,7 @@
 .First <- function(){
   
   ### load packages CRAN
-  list.of.packages <- c('reshape2','ggplot2','gridExtra','viridis','plyr','lubridate')
+  list.of.packages <- c('reshape2','ggplot2','gridExtra','viridis','plyr')#,'lubridate')
   new.packages <- list.of.packages[!(list.of.packages %in% utils::installed.packages()[,"Package"])]
   if(length(new.packages)) install.packages(new.packages)
   lapply(list.of.packages, function(x) suppressMessages(require(x, character.only = TRUE)))

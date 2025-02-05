@@ -81,6 +81,8 @@ probLRP75<- probLRP %>% # lower.tail or 1-pnorm
                       abs(LprobLRP - 0.75) == min(abs(LprobLRP - 0.75))|
                                 abs(UprobLRP - 0.75) == min(abs(UprobLRP - 0.75)))) 
     
+
+
 problrp<- data.frame(ratio=probLRP75$ratio)
 
 write.csv(problrp, paste0("csv/", year, "/problrp.csv"), row.names=F)

@@ -1,0 +1,6 @@
+Operating model name;Details
+OM.base;Assessment model (with Beverton-Holt recruitment projections)
+OM.recmean;projections using average recruitment (2011-2024)
+OM.M0.25;M = 0.25
+OM.US25-50;25-50% of US landings
+OM.US50-75;50-75% of US landings
