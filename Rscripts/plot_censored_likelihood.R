@@ -3,7 +3,7 @@
 # the sd value is added as data in the TMB model
 ######################################################################
 
-.wd <- 'img/resdoc'
+.wd <- 'img/2024'
 
 ### simulate data
 cens <- function(x,sd,L,U){

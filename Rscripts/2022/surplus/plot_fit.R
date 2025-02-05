@@ -107,6 +107,64 @@ saveplot(grid::grid.draw(rbind(
     size='first')),name='RESDOC2',dim=c(22,22),wd=.wd,type=type)
 
 
+#ACCessible version
+p2 <- ssbplot(x)+scale_y_continuous(limits=c(0,max(ssbtable(x)[,3])*1.1),expand = c(0,0))+
+    geom_hline(yintercept = refBase$f40ssb, lty=1)+
+    geom_hline(yintercept = refBase$f40ssb*0.8,lty=2)+
+    geom_hline(yintercept = refBase$f40ssb*0.4,lty=3)
+
+pa <- p2+labs(y="SSB (t)\n")
+saveplot(pa,name='ssb_rpF40_accessible',dim=c(10,6),wd=.wd,type=type)
+
+paFR <- p2+labs(y="BSR (t)\n", x="Année")
+saveplot(paFR,name='FR/ssb_rpF40_accessibleFR',dim=c(10,6),wd=.wd,type=type)
+
+
+p6 <- ggplot(melt(ntable(fit)),aes(x=Var1,y=Var2))+geom_point(alpha=0.8,aes(size=value,col=value))+
+    scale_size(range = c(0.5,5)) +
+    labs(size="N",y='Age',x='Year')+
+    scale_color_gradient(low="grey65", high="black")+
+    guides(col='none')
+pb <- p6+theme(legend.position = 'none')+scale_y_continuous(breaks = 1:10)+labs(y="Age\n")
+saveplot(pb,name='n_Accessible',dim=c(10,6),wd=.wd,type=type)
+
+pbFR <-  pb +labs(y="Âge\n", x="Année")
+saveplot(pbFR,name='FR/n_AccessibleFR',dim=c(10,6),wd=.wd,type=type)
+
+
+pc <- recplot(x)+
+    scale_y_continuous(labels = function(x) format(x, scientific = TRUE),expand=c(0,0),limits=c(0,max(rectable(x)[,3])*1.02))+labs(y="Recruitment (numbers)\n")
+saveplot(pc,name='Recruitement_Accessible',dim=c(10,6),wd=.wd,type=type)
+
+pcFR <- pc+labs(y="Recrutement (nombre)\n", x="Année")
+saveplot(pcFR,name='FR/Recruitement_AccessibleFR',dim=c(10,6),wd=.wd,type=type)
+
+
+
+pd <- srplot(x,curve=T,text=FALSE,linecol='darkred')+labs(y='Recruitment')+
+    scale_y_continuous(labels = function(x) format(x, scientific = TRUE),
+                       breaks=as.numeric(na.omit(layer_scales(pc)$y$break_positions())),
+                       limits=c(0,max(rectable(x)[,1])*1.05),expand=c(0,0))+
+    labs(y="Recruitment (numbers)\n")
+saveplot(pd,name='SSBRecruitement_Accessible',dim=c(10,6),wd=.wd,type=type)
+
+pdFR <- pd + labs(y="Recrutement (nombre)\n", x="Année")
+ saveplot(pdFR,name='FR/SSBRecruitement_AccessibleFR',dim=c(10,6),wd=.wd,type=type)
+
+
+pe <- fbarplot(x)+scale_y_continuous(limits=c(0,4),expand = c(0,0))+geom_hline(yintercept = refBase$f40)+
+    labs(y="Fbar\n")
+saveplot(pe,name='Fbar_Accessible',dim=c(10,6),wd=.wd,type=type)
+peFR <-  pe + labs(y="Fbar\n", x="Année")
+saveplot(peFR,name='FR/Fbar_AccessibleFR',dim=c(10,6),wd=.wd,type=type)
+
+pf <- catchplot(x,fleet = 1,ci=FALSE)+scale_y_continuous(limits=c(0,150000),expand = c(0,0))+ylab('Catch')+
+    labs(y="Landings (t)\n")
+saveplot(pf,name='Landings_Accessible',dim=c(10,6),wd=.wd,type=type)
+pfFR <-  pf + labs(y="Débarquements (t)\n", x="Année")
+saveplot(pfFR,name='FR/Landings_AccessibleFR',dim=c(10,6),wd=.wd,type=type)
+
+    
 if(retro){
     r <-retro(x,year=7,parallell=FALSE)  #maybe make plot with relative change
     save(r, file=paste0('Rdata/',year,'/retro/',name,'_retro.Rdata'))
@@ -146,8 +204,8 @@ saveplot(resplot(x,fleets = 3,type=4,trans = exp),name="/res_index_5exp",dim=c(1
 saveplot(resplot(x,fleets = 2,type=1,low=c('red','orange'),high=c('grey','green','darkgreen')),name="/res_caa_1",dim=c(10,6),wd=.wd,type=type)
 saveplot(resplot(x,fleets = 2,type=2,out=3),name="/res_caa_2",dim=c(10,6),wd=.wd,type=type)
 saveplot(resplot(x,fleets = 2,type=3),name="/res_caa_3",dim=c(10,6),wd=.wd,type=type)
-saveplot(resplot(x,fleets = 2,type=4),name="/res_caa_4",dim=c(25,20),wd=.wd,type=type)
-saveplot(resplot(x,fleets = 2,type=5,std=TRUE),name="/res_caa_5",dim=c(25,20),wd=.wd,type=type)
+saveplot(resplot(x,fleets = 2,type=4) + xlab("Année / Year") + ylab("logObs"),name="/res_caa_4",dim=c(18,13),wd=.wd,type=type)
+saveplot(resplot(x,fleets = 2,type=5,std=TRUE),name="/res_caa_5",dim=c(18,13),wd=.wd,type=type)
 saveplot(resplot(x,fleets = 2,type=6),name="/res_caa_6",dim=c(10,6),wd=.wd,type=type)
 saveplot(resplot(x,fleets = 2,type=7),name="/res_caa_7",dim=c(10,6),wd=.wd,type=type)
 

@@ -26,8 +26,8 @@ save(fit, file=paste0('Rdata/',year,'/fit.Rdata'))
 load(paste0('Rdata/',year,'/fit.Rdata'))
 
 # plots
-# x <- fit
-# name <- 'fitBase'
+ x <- fit
+ name <- 'fitBase'
 # source(paste0('Rscripts/',year,'/surplus/plot_fit.R'))
 
 # source(paste0('Rscripts/',year,'/surplus/save_csv.R'))

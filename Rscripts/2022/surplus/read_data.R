@@ -15,7 +15,7 @@ ctunac <- read.ices(paste0(dir,'ctUnaccounted.dat'))
 cw <- read.ices(paste0(dir,'cw.dat'))
 mo <- read.ices(paste0(dir,'mo.dat'))
 nm <- read.ices(paste0(dir,'nm.dat'))
-nm[] <- 0.3
+#nm[] <- 0.3 not  necessary starting 2024 but can be change for sensitivity
 
 # Mgis <- read.ices("data/2018/nm_Gislason.dat")
 # rate <- colMeans(Mgis[,-1]/Mgis[,-ncol(Mgis)])
@@ -27,12 +27,12 @@ sw <- read.ices(paste0(dir,'sw.dat'))
 sw0 <- read.ices(paste0(dir,'sw0.dat'))
 survey <- read.ices(paste0(dir,'tep.dat')) # survey with NO 2022!!
 survey[[1]] <- survey[[1]][!is.na(survey[[1]]),1,drop=FALSE]
-survey[[1]][,1] <- survey[[1]][,1]*10^9  # this in reality should be 10^9, but in the model conversion from kg to t not done, so corrected here instead. 
+survey[[1]][,1] <- survey[[1]][,1]*10^9  # check for 10^12 this in reality should be 10^9, but in the model conversion from kg to t not done, so corrected here instead. 
 attr(survey[[1]],'time') <- c(0.47)
 pfem <- read.ices(paste0(dir,'propFemale.dat'))
 fec <- read.ices(paste0(dir,'fec.dat'))
 
-# redefine catch limits (add 25-50% US catch)
+# redefine catch limits (add 20-80% US catch)
 ctwusa <- ct                                   # reported landings
 ctwusa[,2] <- ctwusa[,1] + ctunac[,1]          # add max missing in Canada
 ctwusa[,1] <- ctwusa[,1]*1.10 + ctUSA[,1]*0.2     # lower bound: increase and add US
@@ -51,6 +51,8 @@ dat <- setup.ccam.data(surveys=survey,
                        natural.mortality=nm[-1,],
                        prop.fem=pfem[-1,],
                        fec=fec[-1,])
+
+#fit$data$logobs (pour fit$data$aux fleet==1). ou bien plus factile: catchtable(fit)
 
 #identical(dat,dat2) # numeric if no lf, integer if lf
 #ldply(1:length(dat),function(x)identical(dat[[x]],dat2[[x]]))
@@ -71,7 +73,8 @@ par <- defpar(dat,conf)
 if(save){
     wdrdat <-paste0('Rdata/',year,'/input/')
     dir.create(wdrdat,showWarnings = F,recursive = T)
-    
+    ctwusa<- ctwusa[-1,]
+    save(ctwusa,file=paste0(wdrdat,'ctwusalow_highTS6.Rdata'))
     save(dat,file=paste0(wdrdat,'dat.Rdata'))
     save(conf,file=paste0(wdrdat,'conf.Rdata'))
     save(par,file=paste0(wdrdat,'par.Rdata'))
