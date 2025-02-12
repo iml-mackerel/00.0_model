@@ -36,6 +36,7 @@ save(fits.caa, file=paste0('Rdata/',year,'/sensitivity/fits.caa.Rdata'))
 
 # compare all three
 
+load(paste0('Rdata/',year,'/sensitivity/fits.caa.Rdata'))
 ssbplot0(fits.caa, minyear=2010, year=year, legend=T)
 ggsave(paste0(.wd,"ssb_noci2010.png"), width=6, height=5, units="in", bg="white")
 

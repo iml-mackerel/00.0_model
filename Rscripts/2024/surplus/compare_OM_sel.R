@@ -149,6 +149,11 @@ s = list()
 df=list()
 my.seltable = list()
 newtable=list()
+cfiles=c("default", "modif. 2022-2023", "modif. 2022-2024",
+         "default","default", "modif. 2022-2023", "modif. 2022-2024",
+         "default", "default" 
+         )
+
 
 for(i in 1:nsens){
 df[[i]] <-  mytableit(selruns[[i]], what="par.logitSel",trans = invlogit)
@@ -166,13 +171,16 @@ newtable[[i]]<- left_join(my.seltable[[i]] %>%  as.data.frame() %>% mutate(year 
 s[[i]] <-  newtable[[i]] %>%  mutate(age=as.numeric(age)) %>%  
      group_by(age, param) %>% 
      summarise(Estimate= mean(Estimate), Low=mean(Low), High=mean(High), years = paste(min(year), max(year), sep="-")) %>% 
-    mutate(Low=if_else(Low ==0, NA, Low)) %>%  
-    ggplot(aes(x=age, y=Estimate, color=years, group=years)) +geom_line() +geom_ribbon(aes(ymin=Low,ymax=High, fill=years), alpha=0.5) +
+    mutate(Low=if_else(Low ==0, NA, Low),
+           fichier=cfiles[i]) %>%  
+    ggplot(aes(x=age, y=Estimate)) +
+    geom_line(aes(color=years, group=years)) +geom_ribbon(aes(ymin=Low,ymax=High, fill=years, color=years, group=years), alpha=0.5) +
     scale_color_manual(name="", values=c("black", "grey"))+
     scale_fill_manual(name="", values=c("black", "grey"))+
     labs(y="Selectivity", x="Âge | Age") +
     scale_x_continuous(breaks=1:10) + ggtitle(names(selruns)[i]) +
-    theme(legend.position="inside", legend.position.inside =c(0.8,0.2) )
+    theme(legend.position="inside", legend.position.inside =c(0.8,0.2) ) +
+    geom_text(aes(x=8,y=0.6, label=unique(fichier)), col="black") 
 
  
 }

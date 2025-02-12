@@ -125,22 +125,51 @@ add_rows_ices(datname="ctForeign" , csvfile=ctfin, input_year=iny, output_year=o
 
 ## catch unreported
 testval<- read.ices(paste0("data/",outy,"/ct.dat"))
-testval = testval[as.character((as.numeric(iny) +1 -nyears) : as.numeric(outy)),] %>%  as.data.frame() %>%
+testval = testval[as.character((as.numeric(iny) +1 -year_to_remove) : as.numeric(outy)),] %>%  as.data.frame() %>%
           rownames_to_column("year") %>%  mutate(min= if_else(min> 680, min *0.4, 680)) 
 
 add_rows_ices(datname="ctUnaccounted" , csvfile=testval, input_year=iny, output_year=outy,nyears=year_to_remove,
               name="NWA Mackerel, Maximum amount of missing catch")
 
 #catch USA
+
+source(paste0("Rscripts/",outy,"/surplus/perc_USrec.R"))
+
+ctus<- read.csv2(paste0("data/",outy,"/raw/from_Kiersten.csv"), dec=".") %>%  mutate(US.Total.Catch =US.Commercial + US.Comm.discards) %>% dplyr::select(X, US.Total.Catch) %>%  as.data.frame() %>%  mutate(max=NA) %>%  
+    rename(min=US.Total.Catch,
+           year=X)
+add_rows_ices(datname="ctUSA" , csvfile=ctus, input_year=iny, output_year=outy,nyears=55,
+              name="NWA Mackerel USA catch - us vessels only. total lower and upper bounds (units : metric tonnes)")
+file.rename(from=paste0("data/",outy,"/ctUSA.dat"), to=paste0("data/",outy,"/sensitivity/ctUSA_norec.dat"))
+
+
 ctus<- read.csv2(paste0("data/",outy,"/raw/from_Kiersten.csv")) %>% dplyr::select(X, US.Total.Catch) %>%  as.data.frame() %>%  mutate(max=NA) %>%  
     rename(min=US.Total.Catch,
            year=X)
-add_rows_ices(datname="ctUSA" , csvfile=ctus, input_year=iny, output_year=outy,
+add_rows_ices(datname="ctUSA" , csvfile=ctus, input_year=iny, output_year=outy,nyears=55,
+              name="NWA Mackerel USA catch - us vessels only. total lower and upper bounds (units : metric tonnes)")
+file.rename(from=paste0("data/",outy,"/ctUSA.dat"), to=paste0("data/",outy,"/sensitivity/ctUSA_allrec.dat"))
+
+
+ctus1<- read.csv2(paste0("data/",outy,"/raw/from_Kiersten.csv"), dec=".") %>%  dplyr::rename(year=X)
+ctus2<- read.csv(paste0("data/",outy,"/raw/USrec_yearly_during_winter.csv"), dec=".")  %>%  dplyr::select(year, perc_rec)
+ctus3<- read.csv(paste0("data/",outy,"/raw/USrec_decades_during_winter.csv"), dec=".")  %>%  dplyr::select(decade, dec_perc_rec) %>%  distinct()
+
+ctus4<- left_join(full_join(
+    left_join(ctus1, ctus2) ,
+                data.frame(year =seq(1969, outy))) %>%
+        mutate(decade= year - year %% 10 ,
+               decade=if_else(decade < 1980, 1980, decade))  , 
+    ctus3) %>%  ungroup() %>% 
+    dplyr::mutate(perc_rec= dplyr::coalesce(perc_rec, dec_perc_rec))
+
+ctus <-  ctus4 %>% mutate(US.Total.Catch =US.Commercial + US.Comm.discards + (US.Recreational *perc_rec/100)) %>% dplyr::select(year, US.Total.Catch) %>%  as.data.frame() %>%  mutate(max=NA) %>%  
+    rename(min=US.Total.Catch)
+add_rows_ices(datname="ctUSA" , csvfile=ctus, input_year=iny, output_year=outy,nyears=55,
               name="NWA Mackerel USA catch - us vessels only. total lower and upper bounds (units : metric tonnes)")
 
-
 #caa weight
-caawin<- bind_rows(read.csv(paste0("../02.0_catch-at-age/csv/",outy,"/caa_interpol.csv")) %>%  dplyr::filter(year < as.numeric(outy)-nyears+1) %>%  dplyr::select(-zero),
+caawin<- bind_rows(read.csv(paste0("../02.0_catch-at-age/csv/",outy,"/caa_interpol.csv")) %>%  dplyr::filter(year < as.numeric(outy)-year_to_remove+1) %>%  dplyr::select(-zero),
                    read.csv(paste0("../02.0_catch-at-age/csv/",outy,"/caa_modified2022_2023.csv"), header=T, check.names =F)) %>% 
    as.data.frame() %>%  dplyr::select(year, age, waa.interpol) %>%  mutate(waa.interpol=round(waa.interpol,3)) %>%  pivot_wider(names_from=age, values_from=waa.interpol)
 add_rows_ices(datname="cw" , csvfile=caawin, 

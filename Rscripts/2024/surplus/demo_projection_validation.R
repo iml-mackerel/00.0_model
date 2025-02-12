@@ -7,7 +7,7 @@ ny=3
 # 2) with MP hack ----------------------------------------------
 # make MP that does the same as a catchval
 MPcaro <- function(){
-    catchval=c(0,470,500)  # ideally the true future TACs
+    catchval=c(0,470,1000)  # ideally the true future TACs
     rep(catchval,10)
 }
 class(MPcaro) <- append(class(MPcaro),"MP")

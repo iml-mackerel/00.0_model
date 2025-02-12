@@ -53,8 +53,17 @@ saveplot(p4,name='cn_propbar',dim=c(15,8),wd=wd,type=type)  # proportion in popu
 p5 <- heat(mo)
 saveplot(p5,name='pm_heat',dim=c(15,8),wd=wd,type=type)  
 
-p6 <- prettymatplot(mo,ylab='Proportion mature',xlab='Year')+scale_x_continuous(expand = c(0,0))+scale_y_continuous(limits=c(0,1),expand=c(0,0))
-saveplot(p6,name='pm_line',dim=c(15,8),wd=wd,type=type)  
+p6<- mo %>%  as.matrix() %>%  as.data.frame()%>%  rownames_to_column("year") %>%  mutate(year=as.numeric(year)) %>% pivot_longer(2:11)  %>% mutate(age= fct_relevel(name, "10", after=10)) %>% 
+    ggplot(aes(x=year, y=value, color=age)) +geom_line() +scale_x_continuous(expand = c(0,0))+scale_y_continuous(limits=c(0,1),expand=c(0,0)) +
+               scale_color_viridis_d(name="", guide="none") 
+p6EN = p6 +labs(y='Proportion mature',x='Year')
+saveplot(p6EN,name='pm_lineEN',dim=c(15,8),wd=wd,type=type)  
+p6FR = p6 +labs(y='Proportion mature',x='Année')
+saveplot(p6FR,name='pm_lineFR',dim=c(15,8),wd=wd,type=type)  
+p6BI = p6 +labs(y='Proportion mature',x='Année |Year')
+saveplot(p6BI,name='pm_lineBI',dim=c(15,8),wd=wd,type=type)  
+
+
 
 ## stock weight
 p7 <- heat(sw)
@@ -133,4 +142,23 @@ allC <- cbind(allC, Total=rowSums(allC))
 p16 <- prettymatplot(allC,ylab='Catch (t)', xlab='Year',col=c('orange','yellowgreen','mediumorchid','black'))
 saveplot(p16,name='ct_all',dim=c(15,8),wd=wd,type=type) 
 
+#########US rec
+ctus2<- read.csv(paste0("data/",year,"/raw/USrec_yearly_during_winter.csv"), dec=".")  %>%  dplyr::select(year, perc_rec)
+ctus3<- read.csv(paste0("data/",year,"/raw/USrec_decades_during_winter.csv"), dec=".")  %>%  dplyr::select(decade, dec_perc_rec) %>%  distinct()
 
+ctus4<- left_join(full_join(ctus2 ,
+                            data.frame(year =seq(1969, year))) %>%
+                      mutate(decade= year - year %% 10 ,
+                             decade=if_else(decade < 1980, 1980, decade))  , 
+                  ctus3) %>%  ungroup() %>% 
+    dplyr::mutate(flag.dec= ifelse(is.na(perc_rec), "1", "0"),
+                  perc_rec= dplyr::coalesce(perc_rec, dec_perc_rec))
+
+
+p1<- ggplot(data=ctus4,aes(x=year, y=perc_rec, fill=flag.dec))+geom_bar(stat="identity", col="black") +
+    scale_fill_manual(values=c("black", "grey"), guide="none") +
+    scale_x_continuous(breaks=seq(1970, year, 5))
+p1BI<- p1 + labs(x="Année | Year",
+                 y= "% de la pêche récréative avec cont. nord présent  \n % of the recreational fishery with north. cont. ")
+
+ggsave(paste0(wd,"/recfishUS.png" ), width=6, height=4, dpi=600)

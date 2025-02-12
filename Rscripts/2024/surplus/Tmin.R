@@ -7,13 +7,18 @@
 #https://www.federalregister.gov/documents/2024/04/12/2024-07650/fisheries-of-the-northeastern-united-states-2024-and-projected-2025-specifications-for-the-atlantic
 #2024-2025 commercial quota = 868
 
-tacus=868
-abc=3302-74 #74 for can wa planned
+ctus3<- read.csv(paste0("data/",my.year,"/raw/USrec_decades_during_winter.csv"), dec=".")  %>%  dplyr::select(decade, dec_perc_rec) %>%  distinct()
+ctus3
+comm=868
+disc=115
+rec=2143 *0.12
+tacus=round(comm+disc+rec)
+abc=3200 #74 for can wa planned
 
 IEindepus <- function(x,y,seed=NULL){
     if(!is.null(seed)) set.seed(seed)
     IErw <- t(mapply(function(x){cumsum.bounded(c(runif(1,0.2,0.8),rnorm(y-1,0,0.2)),0.2,0.8)},x=1:x)) #matplot(t(IErw),type='l')
-    min <- rep(500,y)  # based on minimun for rec fishing
+    min <- rep(rec,y)  # based on minimun for rec fishing
     mode <- rep(tacus,y) # tac for 2024-2025  US landings 2022
     max <- rep(abc,y)  # abc TAC for future
     cnew<- mapply(function(min,mode,max) {
@@ -188,7 +193,7 @@ saveplot(cz,name="cz_FR",dim=c(17,10),wd=paste0('img/',year,'/Tmin/'))
 df <- foreplot(runlist,what.y='probCZ',data=TRUE)
 rebuildf<- ddply(df[df$y<0.75,],c('id','OM','MP','IE'),summarise,ny=length(y))
 rebuildf<- ddply(rebuildf,c('IE'),function(x){paste0(x[x$OM=='OMbase','ny'],' [',paste(range(x[,'ny']),collapse='-'),']')})
-rebuildf[,1] <- c("F = 0",paste0("TACcan=0, TACus=",868,"t"))
+rebuildf[,1] <- c("F = 0",paste0("TACcan=0, TACus=",tacus,"t"))
 
 df$OM <- gsub("wUS","",df$OM)
 df[df$OM=="OMcore1",'OM'] <- "OM.recMean"
@@ -197,8 +202,8 @@ df[df$OM=="OMcore3",'OM'] <- "OM.US25-50"
 df[df$OM=="OMcore4",'OM'] <- "OM.US50-75"
 df$OM <- factor(df$OM,levels=c("OMbase","OM.recMean","OM0.25","OM.US25-50","OM.US50-75"))
 df[df$IE=="IEconstant","IE"] <- "F = 0"
-df[df$IE=="IEconstant.IEindepus","IE"] <-paste0("TACcan=0, TACus=",868,"t")
-df$IE <- factor(df$IE,levels=c("F = 0",paste0("TACcan=0, TACus=",868,"t")))
+df[df$IE=="IEconstant.IEindepus","IE"] <-paste0("TACcan=0, TACus=",tacus,"t")
+df$IE <- factor(df$IE,levels=c("F = 0",paste0("TACcan=0, TACus=",tacus,"t")))
 
 p <- ggplot(df,aes(x=x,y=y*100))+
     geom_rect(xmin=-Inf,xmax=Inf,ymin=75,ymax=100,fill='lightgrey')+

@@ -8,6 +8,7 @@ library(zoo)
 ct <- read.ices(paste0('data/',year,'/ct.dat'))
 
 catch <- catchtable(x)
+
 d <- x$data
 ix <- d$idx1[1,]+1
 catch[,c('low','high')]<-exp(d$logobs[ix,])

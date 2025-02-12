@@ -1,8 +1,8 @@
 ssbplot0 <-  function(fit, ci=F, language="BI", minyear=1969, year, legend=T){
     
-  p1<-   ssbplot(fit,ci=ci, year=minyear:year)+ scale_y_continuous(limits=c(0,NA), expand=c(0,0)) + scale_x_continuous(breaks=seq(minyear, year, 5))
-  p2  <- fbarplot(fit,ci=ci, year=minyear:year)+ scale_y_continuous(limits=c(0,NA), expand=c(0,0)) + scale_x_continuous(breaks=seq(minyear, year, 5))
-  p3 <-  recplot(fit,ci=ci, year=minyear:year) + scale_y_continuous( limits=c(0,NA), expand=c(0,0)) + scale_x_continuous(breaks=seq(minyear, year, 5))
+  p1<-   ssbplot(fit,ci=ci, year=minyear:year)+ scale_y_continuous(limits=c(0,NA), expand=c(0,0)) + scale_x_continuous(breaks=seq(plyr::round_any(minyear,5, f=floor), year, 5), expand=c(0,0))
+  p2  <- fbarplot(fit,ci=ci, year=minyear:year)+ scale_y_continuous(limits=c(0,NA), expand=c(0,0)) + scale_x_continuous(breaks=seq(plyr::round_any(minyear,5, f=floor), year, 5), expand=c(0,0))
+  p3 <-  recplot(fit,ci=ci, year=minyear:year) + scale_y_continuous( limits=c(0,NA), expand=c(0,0)) + scale_x_continuous(breaks=seq(plyr::round_any(minyear,5, f=floor), year, 5), expand=c(0,0))
     
    if(language=="BI")  pout<- ggarrange(p1 + labs(x="", y="BSR | SSB"),
                                  p2 +labs(x="", y="Fbar"),

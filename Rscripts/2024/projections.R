@@ -58,17 +58,17 @@ copy(x=MP1,n=nMP,name=c('MP'))
 
 avail('MP')
 MP1$catchval <- rep(0,ny)
-MP2$catchval <- rep(200,ny)
-MP3$catchval <- rep(400,ny)
-MP4$catchval <- rep(500,ny)
-MP5$catchval <- rep(600,ny)
-MP6$catchval <- rep(1000,ny)
-MP7$catchval <- rep(2000,ny)
-MP8$catchval <- rep(3000,ny)
-MP9$catchval <- rep(4000,ny)
-MP10$catchval <- rep(5000,ny)
-MP11$catchval <- rep(6000,ny)
-MP12$catchval <- rep(7000,ny)
+MP2$catchval <- rep(400,ny)
+MP3$catchval <- rep(600,ny)
+MP4$catchval <- rep(800,ny)
+MP5$catchval <- rep(1000,ny)
+MP6$catchval <- rep(1200,ny)
+MP7$catchval <- rep(1400,ny)
+MP8$catchval <- rep(1600,ny)
+MP9$catchval <- rep(2000,ny)
+MP10$catchval <- rep(3000,ny)
+MP11$catchval <- rep(4000,ny)
+MP12$catchval <- rep(6000,ny)
 MP13$catchval <- rep(8000,ny)
 
 #******************************************************************************
@@ -91,13 +91,21 @@ IEindepcan <- function(x,y,seed=NULL){
     return(ret)
 }
 class(IEindepcan) <- append(class(IEdep2550),"IE")
+ctus3<- read.csv(paste0("data/",my.year,"/raw/USrec_decades_during_winter.csv"), dec=".")  %>%  dplyr::select(decade, dec_perc_rec) %>%  distinct()
+ctus3
+comm=868
+disc=115
+rec=2143 *0.12
+tacus=comm+disc+rec
+abc=3200 #74 for can wa planned
+
 
 IEindepus <- function(x,y,seed=NULL){
     if(!is.null(seed)) set.seed(seed)
     IErw <- t(mapply(function(x){cumsum.bounded(c(runif(1,0.2,0.8),rnorm(y-1,0,0.2)),0.2,0.8)},x=1:x)) #matplot(t(IErw),type='l')
-    min <- rep(500,y)  # based on minimun for rec fishing
-    mode <- rep(3302,y) # US landings 2022
-    max <- rep(3639,y)  # TAC for future
+    min <- rep(rec,y)  # based on minimun for rec fishing
+    mode <- rep(tacus,y) # tac for 2024-2025  US landings 2022
+    max <- rep(abc,y)  # abc TAC for future
     cnew<- mapply(function(min,mode,max) {
         mc2d::rpert(x,min,mode,max)
     }, min ,mode, max)
@@ -191,9 +199,9 @@ saveplot(pusboxBI,name="IEboxus_BI",dim=c(6,6),wd=paste0('img/',my.year,'/proj')
 
 ### output table
 probgrowth <- function(x){
-    y <- x[[2]]
+    y <- x[[2]] #y+1 (2025)
     ssb <- y$ssb
-    y2 <- x[[4]]
+    y2 <- x[[4]]#y+3 projections for 2024:2027 (2027)
     nssb <- y2$ssb
     grow <- nssb>ssb
     round(length(grow[grow])/length(grow)*100) 

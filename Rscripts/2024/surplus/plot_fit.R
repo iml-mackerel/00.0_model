@@ -31,7 +31,7 @@ saveplot(expplot(x),name='exp',dim=c(10,6),wd=.wd,type=type)
 saveplot(parplot(x),name='par',dim=c(8,7),wd=.wd,type=type)
 saveplot(plot(x),name='plot_all',dim=c(17,20),wd=.wd,type=type)
 saveplot(prodplot(x),name='prod',dim=c(20,12),wd=.wd,type=type)
-saveplot(kobeplot(x),name='kobe',dim=c(14,12),wd=.wd,type=type)
+saveplot(kobeplot(x) + labs(x="SSB/SSBref", y="F/F40%"),name='kobe',dim=c(14/1.5,12/1.5),wd=.wd,type=type)
 saveplot(scplot(x),name='ssb_rel',dim=c(16,10),wd=.wd,type=type)
 
 p1 <- srplot(x,curve=T)+
@@ -61,6 +61,8 @@ p3 <- ssbplot(x,years=2000:year)+scale_y_continuous(limits=c(0,max(tail(ssbtable
     geom_hline(yintercept = refBase$f40ssb*0.4,col='darkred')
 
 saveplot(p3,name='ssb_rpF40end',dim=c(6,6),wd=.wd,type=type)
+p3BI<- p3+labs(x="Année | Year", y="BSR | SSB (t)")
+saveplot(p3BI,name='ssb_rpF40endBI',dim=c(6,6),wd=.wd,type=type)
 
 p4 <- ssbplot(x)+scale_y_continuous(limits=c(0,max(ssbtable(x)[,3])*1.1),expand = c(0,0))+
     geom_hline(yintercept = refBase$ssbmsy)+
@@ -103,6 +105,35 @@ saveplot(grid::grid.draw(rbind(
     cbind(ggplotGrob(pc), ggplotGrob(pd), size="first"),
     cbind(ggplotGrob(pe), ggplotGrob(pf), size="first"),
     size='first')),name='RESDOC2',dim=c(22,22),wd=.wd,type=type)
+
+
+
+
+
+pafr <- pa + labs(y="BSR (t)", x="Année")
+pbfr <- pb + labs(y="Âge", x="Année")
+pcfr <-  pc +labs(y="Recruitment (numbers)\n", x="Année")
+pdfr <- pd + labs(y="Recrutement (nombres)\n", x="BSR (t)")
+pefr <- pe + labs(y="Fbar\n", x="Année")
+pffr <- pf + labs(y="Captures (t)\n", x="Année")
+saveplot(grid::grid.draw(rbind(
+    cbind(ggplotGrob(pafr), ggplotGrob(pbfr), size="first"),
+    cbind(ggplotGrob(pcfr), ggplotGrob(pdfr), size="first"),
+    cbind(ggplotGrob(pefr), ggplotGrob(pffr), size="first"),
+    size='first')),name='RESDOC2FR',dim=c(22,22),wd=.wd,type=type)
+
+
+pabi <- pa + labs(y="BSR | SSB (t)\n", x="Année | Year")
+pbbi <- pb + labs(y="Âge | Age\n", x="Année")
+pcbi <- pc + labs(y="Recrutement | Recruitment (numbers)\n", x="Année | Year")
+pdbi <- pd + labs(y="Recrutement | Recruitment (numbers)\n\n", x="BSR | SSB (t)\n")
+pebi <- pe + labs(y="Fbar\n", x="Année | Year")
+pfbi <- pf + labs(y="Captures | Landings (t)\n", x="Année | Year")
+saveplot(grid::grid.draw(rbind(
+    cbind(ggplotGrob(pabi), ggplotGrob(pbbi), size="first"),
+    cbind(ggplotGrob(pcbi), ggplotGrob(pdbi), size="first"),
+    cbind(ggplotGrob(pebi), ggplotGrob(pfbi), size="first"),
+    size='first')),name='RESDOC2BI',dim=c(22,22),wd=.wd,type=type)
 
 
 if(res){

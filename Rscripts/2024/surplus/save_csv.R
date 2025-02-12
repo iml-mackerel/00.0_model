@@ -43,3 +43,10 @@ write.csv(rec,paste0("csv/",year,"/rec.csv"),row.names = F)
 tsb <- tsbtable(fit)
 tsb <- round(tsb,0)
 write.csv(tsb,paste0("csv/",year,"/tsb.csv"),row.names = F)
+
+
+ct <- read.ices(paste0('data/',year,'/ct.dat'))
+catch <- catchtable(x)
+write.csv(catch,paste0("csv/",year,"/catch.limits.csv"),row.names = F)
+
+

@@ -14,7 +14,7 @@ library(catchR)
 theme_set(theme_mackerel())   
 
 #to add a new year
-#source("Rscripts/2024/add_year_ices.R")
+source("Rscripts/2024/add_year_ices.R")
 year <- 2024
 #.dat should be edited in word pad to avoid problems
 
@@ -62,14 +62,12 @@ load(paste0('Rdata/',year,'/fit.Rdata'))
  source(paste0("Rscripts/",year,"/projections.R")) 
  source(paste0("Rscripts/",year,"/surplus/plot_missingCatch.R"))
  
- 
- #sensitivity
+  #sensitivity
  source(paste0("Rscripts/",year,"/surplus/ssbplot0.R"))
- 
  
  source(paste0("Rscripts/",year,"/surplus/compare_OM_varObs.R"))
  source(paste0("Rscripts/",year,"/surplus/compare_OM_CAA.R"))
-  source(paste0("Rscripts/",year,"/surplus/compare_OM_sel.R"))
+ source(paste0("Rscripts/",year,"/surplus/compare_OM_sel.R"))
  
  source(paste0("Rscripts/",year,"/surplus/sensitivity_TEP.R"))
  source(paste0("Rscripts/",year,"/surplus/compare_OM_C.R"))
@@ -85,8 +83,10 @@ load(paste0('Rdata/',year,'/fit.Rdata'))
  #values to intefrate in document
  
  refBase <- ypr(fit)
- refBase$ssbmsy
+ refBase$f40ssb
 
+ refBase$LRP
+ 
   source("Rscripts/2024/surplus/fbar.R")
   tail(summary(fit),2)
 f1.10  
