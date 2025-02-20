@@ -58,13 +58,13 @@ copy(x=MP1,n=nMP,name=c('MP'))
 
 avail('MP')
 MP1$catchval <- rep(0,ny)
-MP2$catchval <- rep(400,ny)
-MP3$catchval <- rep(600,ny)
-MP4$catchval <- rep(800,ny)
+MP2$catchval <- rep(250,ny)
+MP3$catchval <- rep(500,ny)
+MP4$catchval <- rep(750,ny)
 MP5$catchval <- rep(1000,ny)
-MP6$catchval <- rep(1200,ny)
-MP7$catchval <- rep(1400,ny)
-MP8$catchval <- rep(1600,ny)
+MP6$catchval <- rep(1250,ny)
+MP7$catchval <- rep(1500,ny)
+MP8$catchval <- rep(1750,ny)
 MP9$catchval <- rep(2000,ny)
 MP10$catchval <- rep(3000,ny)
 MP11$catchval <- rep(4000,ny)
@@ -246,7 +246,7 @@ projres <- join(projres,grow, type="left")
 projres<- projres %>%  dplyr::arrange(MP, rec)
 write.csv(projres, file = paste0("csv/",my.year,"/proj.csv"),row.names = FALSE)
 
-
+projres=read.csv(paste0("csv/",my.year,"/proj.csv"))
 
 #colnames of LRP and SSB 2024 and 2025
 ref.names<- names(projres)[9:12] 

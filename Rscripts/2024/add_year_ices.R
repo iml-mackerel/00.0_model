@@ -138,7 +138,7 @@ source(paste0("Rscripts/",outy,"/surplus/perc_USrec.R"))
 ctus<- read.csv2(paste0("data/",outy,"/raw/from_Kiersten.csv"), dec=".") %>%  mutate(US.Total.Catch =US.Commercial + US.Comm.discards) %>% dplyr::select(X, US.Total.Catch) %>%  as.data.frame() %>%  mutate(max=NA) %>%  
     rename(min=US.Total.Catch,
            year=X)
-add_rows_ices(datname="ctUSA" , csvfile=ctus, input_year=iny, output_year=outy,nyears=55,
+add_rows_ices(datname="ctUSA" , csvfile=ctus, input_year=iny, output_year=outy,nyears=34,
               name="NWA Mackerel USA catch - us vessels only. total lower and upper bounds (units : metric tonnes)")
 file.rename(from=paste0("data/",outy,"/ctUSA.dat"), to=paste0("data/",outy,"/sensitivity/ctUSA_norec.dat"))
 
@@ -146,7 +146,7 @@ file.rename(from=paste0("data/",outy,"/ctUSA.dat"), to=paste0("data/",outy,"/sen
 ctus<- read.csv2(paste0("data/",outy,"/raw/from_Kiersten.csv")) %>% dplyr::select(X, US.Total.Catch) %>%  as.data.frame() %>%  mutate(max=NA) %>%  
     rename(min=US.Total.Catch,
            year=X)
-add_rows_ices(datname="ctUSA" , csvfile=ctus, input_year=iny, output_year=outy,nyears=55,
+add_rows_ices(datname="ctUSA" , csvfile=ctus, input_year=iny, output_year=outy,nyears=34,
               name="NWA Mackerel USA catch - us vessels only. total lower and upper bounds (units : metric tonnes)")
 file.rename(from=paste0("data/",outy,"/ctUSA.dat"), to=paste0("data/",outy,"/sensitivity/ctUSA_allrec.dat"))
 
@@ -154,6 +154,9 @@ file.rename(from=paste0("data/",outy,"/ctUSA.dat"), to=paste0("data/",outy,"/sen
 ctus1<- read.csv2(paste0("data/",outy,"/raw/from_Kiersten.csv"), dec=".") %>%  dplyr::rename(year=X)
 ctus2<- read.csv(paste0("data/",outy,"/raw/USrec_yearly_during_winter.csv"), dec=".")  %>%  dplyr::select(year, perc_rec)
 ctus3<- read.csv(paste0("data/",outy,"/raw/USrec_decades_during_winter.csv"), dec=".")  %>%  dplyr::select(decade, dec_perc_rec) %>%  distinct()
+
+means<- ctus1 %>%  summarize(disc=mean(US.Comm.discards, na.rm=T), rec=mean(US.Recreational))
+
 
 ctus4<- left_join(full_join(
     left_join(ctus1, ctus2) ,
@@ -165,7 +168,7 @@ ctus4<- left_join(full_join(
 
 ctus <-  ctus4 %>% mutate(US.Total.Catch =US.Commercial + US.Comm.discards + (US.Recreational *perc_rec/100)) %>% dplyr::select(year, US.Total.Catch) %>%  as.data.frame() %>%  mutate(max=NA) %>%  
     rename(min=US.Total.Catch)
-add_rows_ices(datname="ctUSA" , csvfile=ctus, input_year=iny, output_year=outy,nyears=55,
+add_rows_ices(datname="ctUSA" , csvfile=ctus, input_year=iny, output_year=outy,nyears=34,
               name="NWA Mackerel USA catch - us vessels only. total lower and upper bounds (units : metric tonnes)")
 
 #caa weight

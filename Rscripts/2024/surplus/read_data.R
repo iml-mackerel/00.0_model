@@ -18,7 +18,7 @@ ctunac <- read.ices(paste0(dir,'ctUnaccounted.dat'))
 cw <- read.ices(paste0(dir,'cw.dat'))
 mo <- read.ices(paste0(dir,'mo.dat'))
 nm <- read.ices(paste0(dir,'nm.dat'))
-#nm[] <- 0.27
+nm[] <- 0.28
 
 # Mgis <- read.ices("data/2018/nm_Gislason.dat")
 # rate <- colMeans(Mgis[,-1]/Mgis[,-ncol(Mgis)])
@@ -62,7 +62,7 @@ dat <- setup.ccam.data(surveys=survey,
 conf <- defcon(dat)
 conf$keySel <- matrix(c(0,1,2,3,4,4,4,4,4,4), nrow=nrow(conf$keySel), ncol=ncol(conf$keySel),byrow = T)
 conf$keyVarObs[1,]=-1                     
-conf$keyVarObs[2,1:9]=c(0,1,2,2,2,2,2,1,1) 
+conf$keyVarObs[2,1:9]=c(0,1,2,2,2,2,1,1,1) 
 conf$keyVarObs[3,1]=3           
 conf$stockRecruitmentModelCode=2 #0: RW, 1: ricker, 2: BH, 3:mean
 conf$obsLikelihoodFlag[1]='CE'

@@ -41,7 +41,7 @@ load(paste0('Rdata/',year,'/fit.Rdata'))
  #If R session fails, that is probably the reason
  
  rm(list=ls()[! ls() %in% c("year","fit", "x", "name","saveplot")])
- 
+ #problem with process residuals.....
  source(paste0('Rscripts/',year,'/surplus/plot_fit.R'))
  #source(paste0('Rscripts/',year,'/surplus/retro.R')) bug for some peels 
  source(paste0("Rscripts/",year,"/surplus/retro_hack.R"))
@@ -79,6 +79,7 @@ load(paste0('Rdata/',year,'/fit.Rdata'))
 
  source(paste0("Rscripts/",year,"/surplus/forecast_patch.R"))
  source(paste0("Rscripts/",year,"/surplus/demo_projection_validation.R"))
+ source(paste0("Rscripts/",year,"/surplus/compare_OM_USrec.R"))
  
  #values to intefrate in document
  
@@ -91,4 +92,13 @@ load(paste0('Rdata/',year,'/fit.Rdata'))
   tail(summary(fit),2)
 f1.10  
  
+
+
+#recruitment comparison
+rec <- read_csv("csv/2024/rec.csv")
+rec %>%  mutate(group.year= if_else(year <2010, "1", 
+                if_else(year >=2014,"2", NA))) %>% dplyr::filter(!is.na(group.year)) %>% 
+    group_by(group.year) %>% summarize(mean(Estimate
+                                            )) 
+52114/226577 *100
   

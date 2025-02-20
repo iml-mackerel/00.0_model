@@ -89,18 +89,28 @@ catch2$run="ctUSA_allrec"
 catch3<- bind_rows(catch%>%  as.matrix() %>% data.frame() ,
                    catch1%>%   as.matrix() %>% data.frame() ,
                    catch2%>%   as.matrix() %>% data.frame() )  %>% 
-    mutate_at(1:6, as.numeric)%>%  dplyr::filter(year >2010)
+    mutate_at(1:6, as.numeric)
 
 
 
-pc<-ggplot(catch3,aes(x=year, y=Estimate,col=run, linetype=run))+
+pc<-ggplot(catch3 %>%  dplyr::filter(year >2010),aes(x=year, y=Estimate,col=run, linetype=run))+
     geom_line(lwd=2)+
     geom_ribbon(aes(ymin=lowin, ymax=highin), fill="transparent")+
-    geom_ribbon(aes(ymin=lowin,ymax=Estimate, fill=run),alpha=0.5)+
+    geom_ribbon(aes(ymin=lowin,ymax=Estimate, fill=run),alpha=0.3)+
         #scale_color_manual(values=c('black','darkgrey','darkgrey'))+
     labs(col='',linetype='',y='Catch (t)',x='Year')+
     scale_size_manual(values=c(1,0.3,0.3)) +scale_color_viridis_d() +scale_fill_viridis_d()
 
 saveplot(pc,name='catch_missing',dim=c(15,12),.wd)  # raw data
 
+
+pc<-ggplot(catch3,aes(x=year, y=Estimate,col=run, linetype=run))+
+    geom_line(lwd=2)+
+    geom_ribbon(aes(ymin=lowin, ymax=highin), fill="transparent")+
+    geom_ribbon(aes(ymin=lowin,ymax=Estimate, fill=run),alpha=0.3)+
+    #scale_color_manual(values=c('black','darkgrey','darkgrey'))+
+    labs(col='',linetype='',y='Catch (t)',x='Year')+
+    scale_size_manual(values=c(1,0.3,0.3)) +scale_color_viridis_d() +scale_fill_viridis_d()
+
+saveplot(pc,name='catch_missing_1969',dim=c(15,12),.wd)  # raw data
 

@@ -111,7 +111,15 @@ ssbplot0(fits.Mct, minyear=1969, year=year, legend=T)
 ggsave(paste0(.wd,"ssb_noci1969.png"), width=6, height=5, units="in", bg="white")
 
 
+s <- list.files(paste0('Rdata/',year,'/sensitivity/'),'.M.0',full.names = TRUE,)
+fits.Mct2 <- lapply(s,function(x)get(load(x)))
+names(fits.Mct2) <- gsub(".Rdata","",gsub(paste0('Rdata/',year,'/sensitivity/fit.M.'),"",s))
+class(fits.Mct2) <- "ccamset"
 
+fits.Mct.test <- fits.Mct2[Mrange > 0.27 & Mrange<0.31]
+class(fits.Mct.test) <- "ccamset"
+ssbplot0(fits.Mct.test, minyear=1969, year=year, legend=T)
+ggsave(paste0(.wd,"ssb_noci2010_0.28_0.3.png"), width=6, height=5, units="in", bg="white")
 
 Mabs <- Mabstable(fits.Mct)
 Mabs$fit <- as.numeric(Mabs$fit)

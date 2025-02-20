@@ -83,8 +83,8 @@ ggplot(param.table , aes(x=as.numeric(age), y =fit)) +geom_tile(aes(fill=par),co
     geom_text(data=aic, aes(x=age, y=fit,label=AIC, color=AIC)) +
     scale_color_gradient(low="green", high="red", guide="none") +
     geom_text(aes(label=param), col="white") +
-    annotate(geom="rect", xmin=0.5, xmax=11, ymin=2.5, ymax=3.45, alpha=0.1, col="grey55", lwd=1.1)+
-annotate(geom="rect", xmin=0.5, xmax=11, ymin=3.55, ymax=4.5, alpha=0.1, col="black", lwd=1.1)
+    annotate(geom="rect", xmin=0.5, xmax=11, ymin=2.5, ymax=3.45, alpha=0.1, col="black", lwd=0.8)
+#annotate(geom="rect", xmin=0.5, xmax=11, ymin=3.55, ymax=4.5, alpha=0.1, col="black", lwd=1.1)
 ggsave(paste(.wd,"parObs.png"), width=4, height=4, dpi=600, units="in")
 
 

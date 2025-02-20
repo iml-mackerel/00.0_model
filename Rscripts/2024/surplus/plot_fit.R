@@ -87,6 +87,16 @@ p6 <- ggplot(melt(ntable(fit)),aes(x=Var1,y=Var2))+geom_point(alpha=0.8,aes(size
 saveplot(p6,name='n',dim=c(16,10),wd=.wd,type=type)
 
  
+pn <- ggplot(melt(ntable(fit)),aes(x=Var1,y=Var2))+geom_point(alpha=0.6,aes(size=value/1000))+
+    scale_size(range = c(1,8), breaks=seq(0,1000,250), guide="none") +
+    labs(size="N *1000",y='Age',x='Year')+
+   # scale_color_gradient(high="black", low="grey65")+ 
+    scale_y_continuous(breaks=1:10)
+  # guides(col='none')
+saveplot(pn,name='n_grey',dim=c(16,8),wd=.wd,type=type)
+
+
+
 pa <- p2+geom_text(aes(x=-Inf,y=Inf,label='A)'),hjust=-0.5,vjust=2)+labs(y="SSB (t)\n")
 pb <- p6+theme(legend.position = 'none')+geom_text(aes(x=-Inf,y=Inf,label='B)'),hjust=-0.5,vjust=2)+scale_y_continuous(breaks = 1:10)+labs(y="Age\n")
 pc <- recplot(x)+geom_text(aes(x=-Inf,y=Inf,label='C)'),hjust=-0.5,vjust=2)+
@@ -105,9 +115,6 @@ saveplot(grid::grid.draw(rbind(
     cbind(ggplotGrob(pc), ggplotGrob(pd), size="first"),
     cbind(ggplotGrob(pe), ggplotGrob(pf), size="first"),
     size='first')),name='RESDOC2',dim=c(22,22),wd=.wd,type=type)
-
-
-
 
 
 pafr <- pa + labs(y="BSR (t)", x="Année")
