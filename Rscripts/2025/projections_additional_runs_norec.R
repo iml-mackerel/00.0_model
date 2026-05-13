@@ -295,3 +295,24 @@ p<- recplot(example) +
 pBI<- p+labs(x="Année | Year", y="Recrutement | Recruitment")
 saveplot(pBI,name="proj_recBI_rec0",dim=c(12,6),wd=paste0('img/',my.year,'/proj') )  
 
+
+
+
+
+
+#why the probability decreases?? Because confidence intervals increases . 
+data.frame(ssbtable(runlist)) %>%  filter(year >=2025) %>%  
+    ggplot(aes(x=year, y=Estimate, col=fit, fill=fit)) +geom_line()+geom_ribbon(aes(ymin=Low, ymax=High), alpha=0.3)
+
+
+
+data.frame(ssbtable(runlist)) %>%  filter(year >2025) %>% dplyr::select(-period) %>%   
+    mutate(range=High-Low,
+           percLow=(Estimate-Low)/range,
+           percHigh= (range-Estimate)/range)
+   
+    
+    
+    
+    
+    

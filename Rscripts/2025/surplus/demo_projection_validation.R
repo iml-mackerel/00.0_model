@@ -1,13 +1,13 @@
 # quick demo script to compare forecasts one assessment with new TEP observations
 
 # 1) basic projection (example) -------------------------------
-load('Rdata/2022/fit.Rdata')
+load('Rdata/2024/fit.Rdata')
 ny=3
 nosim=10
 # 2) with MP hack ----------------------------------------------
 # make MP that does the same as a catchval
 MPcaro <- function(){
-    catchval=c(0,470,500)  # ideally the true future TACs
+    catchval=c(470,440,440)  # ideally the true future TACs
     rep(catchval,nosim)
 }
 class(MPcaro) <- append(class(MPcaro),"MP")
@@ -124,16 +124,13 @@ projb <- forecast.patch(MP=rep("MPcaro",ny),
 
 Date = Sys.Date()
 
-DateDir = paste0("Rdata/",my.year,"/proj/",Date,"/")
+DateDir = paste0("Rdata/",my.year,"/projvalid/",Date,"/")
 dir.create(DateDir,showWarnings = FALSE,recursive = T)
 
 multi.forecast(scen.list,DateDir,parallel=F,ncores=min(detectCores(),nMP))
 
 #C:\LEHOUX\Maquereau\iml-mackerel\00.0_model\Rdata\2022\proj\2025-02-25
 
-
-load("C:/LEHOUX/Maquereau/iml-mackerel/00.0_model/Rdata/2022/proj/2025-02-25/projBH.MP1.IEindepcan.IEindepus.Rdata")
-load("C:/LEHOUX/Maquereau/iml-mackerel/00.0_model/Rdata/2022/proj/2025-02-25/projM.MP1.IEindepcan.IEindepus.Rdata")
 
 filenames <- dir(DateDir, pattern = "")
 files <- paste0(DateDir,filenames)
@@ -142,13 +139,13 @@ n <-  gsub(pattern = ".IEindepcan.IEindepus.Rdata",replacement = "",x = filename
 n <- gsub(pattern='proj.MP',replacement='',x=n)
 names(runlist) <-n
 class(runlist) <- 'forecastset'
-save(runlist, file=paste0('Rdata/',my.year,'/proj.Rdata'))
+save(runlist, file=paste0('Rdata/',my.year,'/projvalid.Rdata'))
 
 
 getIndex <- function(x){
     fut <- data.frame(Estimate=do.call(rbind, lapply(x, function(xx)median(xx$index))),
-                      Low=unlist(lapply(x, function(xx)quantile(xx$index,0.025))),
-                      High=unlist(lapply(x, function(xx)quantile(xx$index,0.975))),
+                      Low=unlist(lapply(x, function(xx)quantile(xx$index,0.025, na.rm=T))),
+                      High=unlist(lapply(x, function(xx)quantile(xx$index,0.975, na.rm=T))),
                       year=as.numeric(rownames(attr(x,"tab"))),
                       period="Future",
                       rec=attr(x,"parameters")$rec.meth)

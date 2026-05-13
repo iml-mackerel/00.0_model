@@ -87,8 +87,8 @@ us<- read.table(paste0("data/",my.year,"/raw/from_Kiersten.csv"), dec=".", sep="
     mutate(us.ym1= US.Commercial + US.Comm.discards)
 
 
-comm=c(11524, 13497, 13497)
-disc=rep(287+610, 3) # dscard +buffer
+comm=c(11524, 13210,13210)
+disc=rep(287, 3) # dscard 
 rec=c(2500 *0.12, 2500 *0.12, 2500*0.12)
 maxhist = 5461  #historical maximum form May to December.
 us.now = 396# spring 2026 catches taken from (pounds to mt transformation) https://apps-garfo.fisheries.noaa.gov/quota-monitoring/squid-mackerel-butterfish/mack_qm.html
