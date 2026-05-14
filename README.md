@@ -11,17 +11,17 @@ Canadian Science Advice Secratariat (CSAS) website: http://www.isdm-gdsi.gc.ca/c
 
 * <2018: only input data.
 * 2018: assessment of 2019 (see fit.R)
-  - Science Advisory Report: https://www.dfo-mpo.gc.ca/csas-sccs/Publications/SAR-AS/2019/2019_035-eng.pdf
-  - Research document: http://www.dfo-mpo.gc.ca/csas-sccs/Publications/ResDocs-DocRech/2020/2020_013-eng.pdf 
+  - Science Advisory Report: https://csas-scas.dfo-mpo.gc.ca/publications-publications/fe601667-1f47-45e0-89f6-7ae694b0013c?lang=en
+  - Research document: https://csas-scas.dfo-mpo.gc.ca/publications-publications/4425643c-58cd-4c65-a2b3-de960fe4229f?lang=en
 * 2020: assessment of 2021 (see fit.R)
-  - Science Advisory Report: https://www.dfo-mpo.gc.ca/csas-sccs/Publications/SAR-AS/2021/2021_029-eng.html
-  - Research document: https://www.dfo-mpo.gc.ca/csas-sccs/Publications/ResDocs-DocRech/2022/2022_045-eng.html
+  - Science Advisory Report: https://csas-scas.dfo-mpo.gc.ca/publications-publications/811dd183-1c1c-4620-9c0a-8edb74184f27?lang=en
+  - Research document:  https://csas-scas.dfo-mpo.gc.ca/publications-publications/e3b5f8c7-3b25-4bba-8e93-d5c131db0b03?lang=en
 * 2022: assessment of 2023 (see fit.R)
-  - Science Advisory Report: ...
-  - Research document: ...
+  - Science Advisory Report: https://csas-scas.dfo-mpo.gc.ca/publications-publications/4aa8200f-aa77-4522-842d-41ef36305136?lang=en
+  - Research document: https://csas-scas.dfo-mpo.gc.ca/publications-publications/4e12611e-06ef-4f4a-a1b3-1605a994610e?lang=en
 * 2024: assessment of 2025 (see fit.R)
-  - Science Advisory Report: ...
-  - Research document: ...
+  - Science Advisory Report: https://csas-scas.dfo-mpo.gc.ca/publications-publications/2d6007ac-3fe1-4864-b738-7295367248fb?lang=en
+  - Research document: https://csas-scas.dfo-mpo.gc.ca/publications-publications/065a7c5e-6e5b-4fdc-8110-efae64ada956?lang=en
 * 2025: assessment of 2026 (see fit.R)
   - Science Advisory Report: ...
   - Research document: ...
